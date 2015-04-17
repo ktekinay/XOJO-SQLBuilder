@@ -122,7 +122,8 @@ End
 #tag Events btnCode
 	#tag Event
 		Sub Action()
-		  
+		  AddToResult _
+		  SQLBuilder_MTC.SQLSelect( "a", "b", "c" ).From( "some_table" ).Where("a = b AND c = d" ).OrderBy( "a" ).Limit( 3 ).ToString
 		End Sub
 	#tag EndEvent
 #tag EndEvents
