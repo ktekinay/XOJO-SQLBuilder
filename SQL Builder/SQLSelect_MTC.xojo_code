@@ -96,15 +96,15 @@ Inherits SQLBuilder_MTC
 
 
 	#tag Method, Flags = &h0
-		Function AddColumn(ParamArray column() As String) As SQLSelect_MTC
-		  return AddColumns( column )
+		Function AddColumn(ParamArray col() As String) As SQLSelect_MTC
+		  return AddColumns( col )
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function AddColumns(columns() As String) As SQLSelect_MTC
-		  for i as integer = 0 to columns.Ubound
-		    Columns.Append columns( i )
+		Function AddColumns(cols() As String) As SQLSelect_MTC
+		  for i as integer = 0 to cols.Ubound
+		    Columns.Append cols( i )
 		  next
 		  
 		  return self
@@ -170,6 +170,11 @@ Inherits SQLBuilder_MTC
 
 	#tag ViewBehavior
 		#tag ViewProperty
+			Name="Distinct"
+			Group="Behavior"
+			Type="Boolean"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Index"
 			Visible=true
 			Group="ID"
@@ -201,6 +206,12 @@ Inherits SQLBuilder_MTC
 			Group="Position"
 			InitialValue="0"
 			Type="Integer"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="ToString"
+			Group="Behavior"
+			Type="String"
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Class
