@@ -9,6 +9,62 @@ Protected Class SQLBuilder_MTC
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
+		Protected Sub AppendLimitClause(toArr() As String)
+		  if LimitValue > 0 then
+		    toArr.Append "LIMIT"
+		    toArr.Append str( LimitValue )
+		  end if
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Sub AppendOffsetClause(toArr() As String)
+		  if OffsetValue > 1 then
+		    toArr.Append "OFFSET"
+		    toArr.Append str( OffsetValue )
+		  end if
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Sub AppendOrderByClause(toArr() As String)
+		  if orderByColumns.Ubound = -1 then
+		    return
+		  end if
+		  
+		  toArr.Append "ORDER BY"
+		  
+		  dim orderBuilder() as string
+		  for i as integer = 0 to OrderByColumns.Ubound
+		    dim column as string = OrderByColumns( i )
+		    dim direction as SQLDirection = OrderByDirections( i )
+		    
+		    dim s as string = column
+		    if direction = SQLDirection.Descending then
+		      s = s + " DESC"
+		    end if
+		    
+		    orderBuilder.Append s
+		  next i
+		  
+		  toArr.Append join( orderBuilder, ", " )
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Sub AppendWhereClause(toArr() As String)
+		  if WhereClause <> "" then
+		    toArr.Append "WHERE"
+		    toArr.Append WhereClause
+		  end if
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
 		Protected Sub Constructor()
 		  // Cannot instantiate directly
 		End Sub
