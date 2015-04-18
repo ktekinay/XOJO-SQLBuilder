@@ -85,7 +85,7 @@ Protected Class SQLBuilder_MTC
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Sub OrderBy(column As String, direction As OrderByDirection)
+		Protected Sub OrderBy(column As String, direction As SQLDirection)
 		  OrderByColumns.Append column.Trim
 		  OrderByDirections.Append direction
 		  
@@ -139,7 +139,7 @@ Protected Class SQLBuilder_MTC
 	#tag EndProperty
 
 	#tag Property, Flags = &h1
-		Protected OrderByDirections() As OrderByDirection
+		Protected OrderByDirections() As SQLDirection
 	#tag EndProperty
 
 	#tag Property, Flags = &h1
@@ -164,7 +164,7 @@ Protected Class SQLBuilder_MTC
 	#tag EndProperty
 
 
-	#tag Enum, Name = OrderByDirection, Type = Integer, Flags = &h0
+	#tag Enum, Name = SQLDirection, Flags = &h0
 		Ascending
 		Descending
 	#tag EndEnum
@@ -203,6 +203,12 @@ Protected Class SQLBuilder_MTC
 			Group="Position"
 			InitialValue="0"
 			Type="Integer"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="ToString"
+			Group="Behavior"
+			Type="String"
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Class

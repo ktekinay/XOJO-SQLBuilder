@@ -144,7 +144,7 @@ Inherits SQLBuilder_MTC
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function OrderBy(column As String, direction As OrderByDirection = OrderByDirection.Ascending) As SQLSelect_MTC
+		Function OrderBy(column As String, direction As SQLDirection = SQLDirection.Ascending) As SQLSelect_MTC
 		  super.OrderBy column, direction
 		  return self
 		End Function
