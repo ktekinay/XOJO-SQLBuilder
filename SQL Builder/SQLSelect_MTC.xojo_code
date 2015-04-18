@@ -44,48 +44,22 @@ Inherits SQLBuilder_MTC
 		  //
 		  // Where
 		  //
-		  if WhereClause <> "" then
-		    builder.Append "WHERE"
-		    builder.Append WhereClause
-		  end if
+		  AppendWhereClause builder
 		  
 		  //
 		  // Order By
 		  //
-		  if OrderByColumns.Ubound <> -1 then
-		    builder.Append "ORDER BY"
-		    
-		    dim orderBuilder() as string
-		    for i as integer = 0 to OrderByColumns.Ubound
-		      dim column as string = OrderByColumns( i )
-		      dim direction as OrderByDirection = OrderByDirections( i )
-		      
-		      dim s as string = column
-		      if direction = OrderByDirection.Descending then
-		        s = s + " DESC"
-		      end if
-		      
-		      orderBuilder.Append s
-		    next i
-		    
-		    builder.Append join( orderBuilder, ", " )
-		  end if
+		  AppendOrderByClause builder
 		  
 		  //
 		  // Limit
 		  //
-		  if LimitValue > 0 then
-		    builder.Append "LIMIT"
-		    builder.Append str( LimitValue )
-		  end if
+		  AppendLimitClause builder
 		  
 		  //
 		  // Offset
 		  //
-		  if OffSetValue > 1 then
-		    builder.Append "OFFSET"
-		    builder.Append str( OffsetValue )
-		  end if
+		  AppendOffsetClause builder
 		  
 		  dim r as string = join( builder, " " )
 		  r = r.Trim
