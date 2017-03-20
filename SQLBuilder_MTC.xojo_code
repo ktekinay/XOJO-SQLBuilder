@@ -1,12 +1,10 @@
-#tag Class
-Protected Class SQLInsert_MTC
-Inherits SQLBuilder_MTC
-	#tag Method, Flags = &h1000
-		Sub Constructor()
-		  // Calling the overridden superclass constructor.
-		  Super.Constructor
-		  
-		End Sub
+#tag Module
+Protected Module SQLBuilder_MTC
+	#tag Method, Flags = &h1
+		Protected Function SQLSelect(db As Database, ParamArray columns() As String) As SQLBuilder_MTC.FromClause
+		  dim sql as new SQLBuilder_MTC.Statement( db )
+		  return sql.SQLSelect(columns)
+		End Function
 	#tag EndMethod
 
 
@@ -45,5 +43,5 @@ Inherits SQLBuilder_MTC
 			Type="Integer"
 		#tag EndViewProperty
 	#tag EndViewBehavior
-End Class
-#tag EndClass
+End Module
+#tag EndModule

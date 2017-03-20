@@ -123,7 +123,12 @@ End
 	#tag Event
 		Sub Action()
 		  AddToResult _
-		  SQLBuilder_MTC.SQLSelect( "a", "b", "c" ).From( "some_table" ).Where("a = b AND c = d" ).OrderBy( "a" ).Limit( 3 ).ToString
+		  SQLBuilder_MTC. _
+		  SQLSelect( nil, "a", "b", "c" ). _
+		  From( "some_table" ).Where("a", "b").WhereAnd.Where( "c", "<", "d" )
+		  
+		  
+		  ' = b AND c = d" ).OrderBy( "a" ).Limit( 3 ).ToString
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -175,7 +180,6 @@ End
 			"7 - Global Floating Window"
 			"8 - Sheet Window"
 			"9 - Metal Window"
-			"10 - Drawer Window"
 			"11 - Modeless Dialog"
 		#tag EndEnumValues
 	#tag EndViewProperty
