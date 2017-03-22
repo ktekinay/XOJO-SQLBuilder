@@ -1,4 +1,4 @@
 #tag Interface
-Private Interface SelectClause
+Private Interface GroupByClause
 End Interface
 #tag EndInterface

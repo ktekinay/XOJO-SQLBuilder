@@ -1,9 +1,31 @@
 #tag Module
 Protected Module SQLBuilder_MTC
 	#tag Method, Flags = &h1
-		Protected Function SQLSelect(db As Database, ParamArray columns() As String) As SQLBuilder_MTC.FromClause
-		  dim sql as new SQLBuilder_MTC.Statement( db )
+		Protected Function SQLSelect(ParamArray columns() As String) As SQLBuilder_MTC.FromClause
+		  dim sql as new SQLBuilder_MTC.Statement
 		  return sql.SQLSelect(columns)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function SQLSelectDistinct(ParamArray columns() As String) As SQLBuilder_MTC.FromClause
+		  dim sql as new SQLBuilder_MTC.Statement
+		  return sql.SQLSelectDistinct(columns)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function Where(column As String, comparison As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		  dim where as new SQLBuilder_MTC.Statement
+		  return where.Where( column, comparison, value )
+		  
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function Where(column As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		  return Where( column, "=", value )
 		End Function
 	#tag EndMethod
 
