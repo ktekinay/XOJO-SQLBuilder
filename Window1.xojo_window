@@ -124,13 +124,14 @@ End
 		Sub Action()
 		  AddToResult _
 		  SQLBuilder_MTC. _
-		  SQLSelect( "a", "b", "c" ). _
+		  SQLSelect( "a, b, c" ). _
 		  From( "some_table" ). _
 		  Where("a", "b"). _
-		  WhereAnd. _
-		  Where( "c", "<", "d" )
+		  AndWhere( "c", "<", "d" )
 		  
-		  SQLBuilder_MTC.SQLSelect( "a, b, c" ).From( "sometable" ).Where("this", "=", "that" ).Where
+		  AddToResult SQLBuilder_MTC.SQLSelect( "blah" ).From( "provider as p" ).InnerJoin( "client", "c.provider_id = p.id" )
+		  
+		  AddToResult SQLBuilder_MTC.SQLSelect( "a, b, c" ).From( "table" )
 		End Sub
 	#tag EndEvent
 #tag EndEvents

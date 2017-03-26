@@ -1,5 +1,6 @@
 #tag Class
 Private Class LimitParams
+Inherits SQLBuilder_MTC.Params
 	#tag Property, Flags = &h0
 		Limit As Integer = -1
 	#tag EndProperty
@@ -27,6 +28,7 @@ Private Class LimitParams
 		#tag ViewProperty
 			Name="Limit"
 			Group="Behavior"
+			InitialValue="-1"
 			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -34,6 +36,12 @@ Private Class LimitParams
 			Visible=true
 			Group="ID"
 			Type="String"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Offset"
+			Group="Behavior"
+			InitialValue="-1"
+			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"

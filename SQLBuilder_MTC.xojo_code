@@ -1,16 +1,25 @@
 #tag Module
 Protected Module SQLBuilder_MTC
 	#tag Method, Flags = &h1
-		Protected Function SQLSelect(ParamArray columns() As String) As SQLBuilder_MTC.FromClause
-		  dim sql as new SQLBuilder_MTC.Statement
-		  return sql.SQLSelect(columns)
+		Protected Function CondWhere(includeIf As Boolean = True, column As String, comparison As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		  dim where as new SQLBuilder_MTC.Statement
+		  return where.CondWhere( includeIf, column, comparison, value )
+		  
+		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function SQLSelectDistinct(ParamArray columns() As String) As SQLBuilder_MTC.FromClause
+		Protected Function SQLSelect(expression As String, values() As Variant = Nil) As SQLBuilder_MTC.SelectClause
 		  dim sql as new SQLBuilder_MTC.Statement
-		  return sql.SQLSelectDistinct(columns)
+		  return sql.SQLSelect( expression, values )
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function SQLSelectDistinct(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.SelectClause
+		  dim sql as new SQLBuilder_MTC.Statement
+		  return sql.SQLSelectDistinct( expression, values )
 		End Function
 	#tag EndMethod
 
@@ -23,11 +32,9 @@ Protected Module SQLBuilder_MTC
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h1
-		Protected Function Where(column As String, value As Variant) As SQLBuilder_MTC.WhereClause
-		  return Where( column, "=", value )
-		End Function
-	#tag EndMethod
+
+	#tag Constant, Name = kSQLPlaceholder, Type = String, Dynamic = False, Default = \"\?", Scope = Public
+	#tag EndConstant
 
 
 	#tag ViewBehavior

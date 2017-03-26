@@ -1,10 +1,21 @@
-#tag Interface
-Private Interface HavingClause
-	#tag Method, Flags = &h0
-		Function Having(ParamArray conditions() As String) As SQLBuilder_MTC.HavingClause
-		  
-		End Function
-	#tag EndMethod
+#tag Class
+Private Class WhereParams
+Inherits SQLBuilder_MTC.Params
+	#tag Property, Flags = &h0
+		Expression As Variant
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		IsNOT As Boolean
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		IsOR As Boolean
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		Values() As Variant
+	#tag EndProperty
 
 
 	#tag ViewBehavior
@@ -42,5 +53,5 @@ Private Interface HavingClause
 			Type="Integer"
 		#tag EndViewProperty
 	#tag EndViewBehavior
-End Interface
-#tag EndInterface
+End Class
+#tag EndClass

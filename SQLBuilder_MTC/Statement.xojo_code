@@ -1,6 +1,6 @@
 #tag Class
 Protected Class Statement
-Implements FromClause, TableClause, WhereClause, LimitClause, OrderByClause, HavingClause, GroupByClause
+Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag Method, Flags = &h21
 		Private Sub AppendToArray(appendTo() As String, fromArr() As String)
 		  for i as integer =0 to fromArr.Ubound
@@ -10,8 +10,206 @@ Implements FromClause, TableClause, WhereClause, LimitClause, OrderByClause, Hav
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h21
+		Private Sub AppendWhereParam(expression As Variant, values() As Variant, isNOT As Boolean, isOR As Boolean)
+		  dim p as new SQLBuilder_MTC.WhereParams
+		  p.Expression = expression
+		  if not ( values is nil ) then
+		    for i as integer = 0 to values.Ubound
+		      p.Values.Append values( i )
+		    next
+		  end if
+		  
+		  p.IsNOT = isNOT
+		  p.IsOR = isOR
+		  
+		  WhereParams.Append p
+		  
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h0
-		Function CrossJoin(table As String) As SQLBuilder_MTC.TableClause
+		Function CondOrWhere(includeIf As Boolean, statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return OrWhere( statement )
+		  else
+		    return self
+		  end if
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondOrWhere(includeIf As Boolean, column As String, comparison As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return OrWhere( column, comparison, value )
+		  else
+		    return self
+		  end if
+		  
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondOrWhere(includeIf As Boolean, column As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		  return CondOrWhere( includeIf, column, "=", value )
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondOrWhereBetween(includeIf As Boolean, column As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return OrWhereBetween( column, lowValue, highValue )
+		  else
+		    return self
+		  end if
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondOrWhereNot(includeIf As Boolean, statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return OrWhereNot( statement )
+		  else
+		    return self
+		  end if
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondOrWhereNotBetween(includeIf As Boolean, column As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return OrWhereNotBetween( column, lowValue, highValue )
+		  else
+		    return self
+		  end if
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondOrWhereRaw(includeIf As Boolean, expression As String, ParamArray values() As String) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return OrWhereRaw( expression, values )
+		  else
+		    return self
+		  end if
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhere(includeIf As Boolean, expression As SQLBuilder_MTC.Statement, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return Where( expression, values )
+		  else
+		    return self
+		  end if
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhere(includeIf As Boolean, column As String, comparison As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return Where( column, comparison, value )
+		  else
+		    return self
+		  end if
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhere(includeIf As Boolean, column As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		  return CondWhere( includeIf, column, "=", value )
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereBetween(includeIf As Boolean, column As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return WhereBetween( column, lowValue, highValue )
+		  else
+		    return self
+		  end if
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereIn(includeIf As Boolean, column As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return WhereIn( column, subQuery )
+		  else
+		    return self
+		  end if
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereNot(includeIf As Boolean, statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return WhereNot( statement )
+		  else
+		    return self
+		  end if
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereNotBetween(includeIf As Boolean, column As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return WhereNotBetween( column, lowValue, highValue )
+		  else
+		    return self
+		  end if
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereNotNull(includeIf As Boolean, column As String) As SQLBuilder_MTC.WhereClause
+		  return CondWhere( includeIf, column, "<>", nil )
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereNull(includeIf As Boolean, column As String) As SQLBuilder_MTC.WhereClause
+		  return CondWhere( includeIf, column, "=", nil )
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereRaw(includeIf As Boolean, statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return WhereRaw( statement )
+		  else
+		    return self
+		  end if
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereRaw(includeIf As Boolean, expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return WhereRaw( expression, values )
+		  else
+		    return self
+		  end if
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CrossJoin(table As String) As SQLBuilder_MTC.FromClause
 		  Tables.Append "CROSS JOIN " + table 
 		  return self
 		  
@@ -19,22 +217,16 @@ Implements FromClause, TableClause, WhereClause, LimitClause, OrderByClause, Hav
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
-		Private Sub DoSQLSelect(columns() As String)
-		  AppendToArray self.Columns, columns
+		Private Sub DoSQLSelect(expression As String, values() As Variant)
+		  
+		  
+		  'AppendToArray self.Columns, columns
 		  
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function From(tables() As String) As SQLBuilder_MTC.TableClause
-		  AppendToArray self.Tables, tables
-		  return self
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function From(table As String, ParamArray tables() As String) As SQLBuilder_MTC.TableClause
+		Function From(table As String, ParamArray tables() As String) As SQLBuilder_MTC.FromClause
 		  self.Tables.Append table
 		  AppendToArray self.Tables, tables
 		  
@@ -44,15 +236,32 @@ Implements FromClause, TableClause, WhereClause, LimitClause, OrderByClause, Hav
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function FullJoin(table As String, onCondition As String) As SQLBuilder_MTC.TableClause
+		Function FullJoin(table As String, onCondition As String) As SQLBuilder_MTC.FromClause
 		  Tables.Append "FULL JOIN " + table + " ON (" + onCondition + ")"
 		  return self
 		  
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h21
+		Private Function GetTrueValues(values() As Variant) As Variant()
+		  //
+		  // A ParamArray might embed the true array inside another array
+		  // so will drill down and extract that
+		  //
+		  
+		  dim result() as variant = values
+		  
+		  while result.Ubound = 0 and result( 0 ).IsArray
+		    result = result( 0 )
+		  wend
+		  
+		  return result
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h0
-		Function GroupBy(ParamArray columns() As String) As SQLBuilder_MTC.GroupByClause
+		Function GroupBy(ParamArray columns() As String) As SQLBuilder_MTC.AdditionalClause
 		  AppendToArray GroupBys, columns
 		  return self
 		  
@@ -60,7 +269,7 @@ Implements FromClause, TableClause, WhereClause, LimitClause, OrderByClause, Hav
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Having(ParamArray conditions() As String) As SQLBuilder_MTC.HavingClause
+		Function Having(ParamArray conditions() As String) As SQLBuilder_MTC.AdditionalClause
 		  AppendToArray Havings, conditions
 		  
 		  return self
@@ -69,7 +278,7 @@ Implements FromClause, TableClause, WhereClause, LimitClause, OrderByClause, Hav
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function InnerJoin(table As String, onCondition As String) As SQLBuilder_MTC.TableClause
+		Function InnerJoin(table As String, onCondition As String) As SQLBuilder_MTC.FromClause
 		  Tables.Append "INNER JOIN " + table + " ON (" + onCondition + ")"
 		  return self
 		  
@@ -77,7 +286,7 @@ Implements FromClause, TableClause, WhereClause, LimitClause, OrderByClause, Hav
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Join(table As String, onCondition As String) As SQLBuilder_MTC.TableClause
+		Function Join(table As String, onCondition As String) As SQLBuilder_MTC.FromClause
 		  Tables.Append "JOIN " + table + " ON (" + onCondition + ")"
 		  return self
 		  
@@ -85,7 +294,7 @@ Implements FromClause, TableClause, WhereClause, LimitClause, OrderByClause, Hav
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function LeftJoin(table As String, onCondition As String) As SQLBuilder_MTC.TableClause
+		Function LeftJoin(table As String, onCondition As String) As SQLBuilder_MTC.FromClause
 		  Tables.Append "LEFT JOIN " + table + " ON (" + onCondition + ")"
 		  return self
 		  
@@ -93,29 +302,14 @@ Implements FromClause, TableClause, WhereClause, LimitClause, OrderByClause, Hav
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Limit(limit As Integer) As SQLBuilder_MTC.LimitClause
+		Function Limit(limit As Integer) As SQLBuilder_MTC.AdditionalClause
 		  SQLLimit.Limit = limit
 		  return self
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h21
-		Private Function NextParameter(appendValue As Variant) As String
-		  Values.Append appendValue
-		  
-		  select case Db
-		  case isa MySQLCommunityServer
-		    return "?"
-		    
-		  case else
-		    return "$" + str( Values.Ubound + 1 )
-		    
-		  end select
-		End Function
-	#tag EndMethod
-
 	#tag Method, Flags = &h0
-		Function Offset(offset As Integer) As SQLBuilder_MTC.LimitClause
+		Function Offset(offset As Integer) As SQLBuilder_MTC.AdditionalClause
 		  SQLLimit.Offset = offset
 		  return self
 		End Function
@@ -129,7 +323,7 @@ Implements FromClause, TableClause, WhereClause, LimitClause, OrderByClause, Hav
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function OrderBy(ParamArray columnIndexes() As Integer) As SQLBuilder_MTC.OrderByClause
+		Function OrderBy(ParamArray columnIndexes() As Integer) As SQLBuilder_MTC.AdditionalClause
 		  for i as integer = 0 to columnIndexes.Ubound
 		    OrderBys.Append str( columnIndexes( i ) )
 		  next
@@ -140,7 +334,7 @@ Implements FromClause, TableClause, WhereClause, LimitClause, OrderByClause, Hav
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function OrderBy(ParamArray columnsOrExpressions() As String) As SQLBuilder_MTC.OrderByClause
+		Function OrderBy(ParamArray columnsOrExpressions() As String) As SQLBuilder_MTC.AdditionalClause
 		  AppendToArray OrderBys, columnsOrExpressions
 		  
 		  return self
@@ -148,15 +342,79 @@ Implements FromClause, TableClause, WhereClause, LimitClause, OrderByClause, Hav
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function OuterJoin(table As String, onCondition As String) As SQLBuilder_MTC.TableClause
-		  Tables.Append "OUTER JOIN " + table + " ON (" + onCondition + ")"
+		Function OrWhere(statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  AppendWhereParam statement, nil, false, true
+		  return self
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OrWhere(column As String, comparison As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		  dim values() as variant
+		  values.Append value
+		  
+		  AppendWhereParam column + comparison + kSQLPlaceholder, values, false, true
 		  return self
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function RightJoin(table As String, onCondition As String) As SQLBuilder_MTC.TableClause
+		Function OrWhere(column As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		  return OrWhere( column, "=", value )
+		  
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OrWhereBetween(column As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
+		  dim values() as variant
+		  values.Append lowValue
+		  values.Append highValue
+		  
+		  AppendWhereParam column + " BETWEEN ? AND ?", values, true, false
+		  return self
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OrWhereNot(statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  AppendWhereParam statement, nil, true, true
+		  return self
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OrWhereNotBetween(column As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
+		  dim values() as variant
+		  values.Append lowValue
+		  values.Append highValue
+		  
+		  AppendWhereParam column + " NOT BETWEEN ? AND ?", values, false, true
+		  return self
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OrWhereRaw(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		  AppendWhereParam expression, values, false, true
+		  return self
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OuterJoin(table As String, onCondition As String) As SQLBuilder_MTC.FromClause
+		  #pragma warning "Finish this!"
+		  
+		  return self
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function RightJoin(table As String, onCondition As String) As SQLBuilder_MTC.FromClause
 		  Tables.Append "RIGHT JOIN " + table + " ON (" + onCondition + ")"
 		  return self
 		  
@@ -164,117 +422,55 @@ Implements FromClause, TableClause, WhereClause, LimitClause, OrderByClause, Hav
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function SQLSelect(columns() As String) As SQLBuilder_MTC.FromClause
-		  OperationType = "SELECT"
-		  DoSQLSelect columns
-		  
-		  return self
+		Function SQLSelect(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.SelectClause
+		  return SQLSelect( expression, values )
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function SQLSelect(ParamArray columns() As String) As SQLBuilder_MTC.FromClause
-		  return SQLSelect( columns )
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function SQLSelectDistinct(ParamArray columns() As String) As SQLBuilder_MTC.FromClause
-		  return SQLSelectDistinct( columns )
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function SQLSelectDistinct(columns() As String) As SQLBuilder_MTC.FromClause
-		  OperationType = "SELECT DISTINCT"
-		  DoSQLSelect columns
-		  return self
+		Function SQLSelectDistinct(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.SelectClause
+		  return SQLSelectDistinct( expression, values )
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function ToString() As String
-		  dim builder() as string
+		  #pragma warning "Finish this!"
 		  
-		  if OperationType <> "" then
-		    builder.Append OperationType
-		    builder.Append EndOfLine
-		    
-		    select case OperationType
-		    case "SELECT"
-		      if Columns.Ubound = -1 then
-		        builder.Append "*"
-		      else
-		        builder.Append join( Columns, "," + EndOfLine )
-		      end if
-		      
-		    end select
-		    
-		  end if
-		  
-		  builder.Append EndOfLine
-		  
-		  if Tables.Ubound <> -1 then
-		    builder.Append "FROM"
-		    builder.Append EndOfLine
-		    
-		    builder.Append join( tables, "," + EndOfLine )
-		    builder.Append EndOfLine
-		  end if
-		  
-		  
-		  if WhereConditions.Ubound <> -1 then
-		    builder.Append "WHERE"
-		    builder.Append EndOfLine
-		    
-		    for i as integer = 0 to WhereConditions.Ubound
-		      builder.Append WhereConditions( i ).StringValue
-		      builder.Append EndOfLine
-		    next
-		  end if
-		  
-		  return join( builder, "" )
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function Where(statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
-		  WhereConditions.Append statement
+		  AppendWhereParam statement, nil, false, false
 		  return self
-		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function Where(column As String, comparison As String, value As Variant) As SQLBuilder_MTC.WhereClause
-		  comparison = comparison.Trim
-		  
 		  if value.IsNull then
 		    
-		    select case comparison
-		    case "<", ">", "<>", "!=", "is not"
-		      WhereConditions.Append column + " IS NOT NULL"
-		      
+		    select case comparison.Trim
+		    case "=", "IS"
+		      return WhereNull( column )
 		    case else
-		      WhereConditions.Append column + " IS NULL"
-		      
+		      return WhereNotNull( column )
 		    end select
 		    
 		  else
 		    
-		    if comparison = "" then
+		    select case comparison.Trim
+		    case "IS"
 		      comparison = "="
-		    end if
+		    case "IS NOT" 
+		      comparison = "<>"
+		    end select
 		    
-		    WhereConditions.Append column + " " + comparison + " " + NextParameter( value )
+		    return WhereRaw( column + comparison + kSQLPlaceholder, value )
 		    
 		  end if
-		  
-		  
-		  return self
 		  
 		End Function
 	#tag EndMethod
@@ -282,43 +478,51 @@ Implements FromClause, TableClause, WhereClause, LimitClause, OrderByClause, Hav
 	#tag Method, Flags = &h0
 		Function Where(column As String, value As Variant) As SQLBuilder_MTC.WhereClause
 		  return Where( column, "=", value )
+		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereAnd() As SQLBuilder_MTC.WhereClause
-		  WhereConditions.Append "AND"
-		  return self
+		Function WhereBetween(column As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
+		  dim values() as variant
+		  values.Append lowValue
+		  values.Append highValue
 		  
+		  AppendWhereParam column + " BETWEEN ? AND ?", values, false, false
+		  return self
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function WhereIn(column As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
-		  WhereConditions.Append column + " IN (" 
-		  WhereConditions.Append subQuery
-		  WhereConditions.Append ")"
+		  return Where( column, "IN", subQuery )
 		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function WhereNot(statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  AppendWhereParam statement, nil, true, false
 		  return self
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereNot() As SQLBuilder_MTC.WhereClause
-		  WhereConditions.Append "NOT"
-		  return self
+		Function WhereNotBetween(column As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
+		  dim values() as variant
+		  values.Append lowValue
+		  values.Append highValue
 		  
+		  AppendWhereParam column + " NOT BETWEEN ? AND ?", values, false, false
+		  return self
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function WhereNotIn(column As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
-		  WhereConditions.Append column + " NOT IN (" 
-		  WhereConditions.Append subQuery
-		  WhereConditions.Append ")"
+		  return Where( column, "NOT IN", subQuery )
 		  
-		  return self
 		  
 		End Function
 	#tag EndMethod
@@ -338,19 +542,8 @@ Implements FromClause, TableClause, WhereClause, LimitClause, OrderByClause, Hav
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereOr() As SQLBuilder_MTC.WhereClause
-		  WhereConditions.Append "OR"
-		  return self
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function WhereRaw(sql As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
-		  WhereConditions.Append "(" + sql + ")"
-		  for i as integer = 0 to values.Ubound
-		    self.Values.Append values(i)
-		  next
+		Function WhereRaw(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		  AppendWhereParam expression, values, false, false
 		  
 		  return self
 		  
@@ -362,10 +555,6 @@ Implements FromClause, TableClause, WhereClause, LimitClause, OrderByClause, Hav
 		Private Columns() As String
 	#tag EndProperty
 
-	#tag Property, Flags = &h1
-		Protected Db As Database
-	#tag EndProperty
-
 	#tag Property, Flags = &h21
 		Private GroupBys() As String
 	#tag EndProperty
@@ -375,7 +564,7 @@ Implements FromClause, TableClause, WhereClause, LimitClause, OrderByClause, Hav
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
-		Private mOperationType As String
+		Attributes( hidden ) Private mOperationType As String
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
@@ -441,11 +630,7 @@ Implements FromClause, TableClause, WhereClause, LimitClause, OrderByClause, Hav
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
-		Private Values() As Variant
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
-		Private WhereConditions() As Variant
+		Private WhereParams() As SQLBuilder_MTC.WhereParams
 	#tag EndProperty
 
 
@@ -469,6 +654,12 @@ Implements FromClause, TableClause, WhereClause, LimitClause, OrderByClause, Hav
 			Visible=true
 			Group="ID"
 			Type="String"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="StringValue"
+			Group="Behavior"
+			Type="String"
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"
