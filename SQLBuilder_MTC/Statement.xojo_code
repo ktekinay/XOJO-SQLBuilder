@@ -40,9 +40,9 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondOrWhere(includeIf As Boolean, column As String, comparison As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		Function CondOrWhere(includeIf As Boolean, expression As String, comparison As String, value As Variant) As SQLBuilder_MTC.WhereClause
 		  if includeIf then
-		    return OrWhere( column, comparison, value )
+		    return OrWhere( expression, comparison, value )
 		  else
 		    return self
 		  end if
@@ -52,15 +52,15 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondOrWhere(includeIf As Boolean, column As String, value As Variant) As SQLBuilder_MTC.WhereClause
-		  return CondOrWhere( includeIf, column, "=", value )
+		Function CondOrWhere(includeIf As Boolean, expression As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		  return CondOrWhere( includeIf, expression, "=", value )
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondOrWhereBetween(includeIf As Boolean, column As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
+		Function CondOrWhereBetween(includeIf As Boolean, expression As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
 		  if includeIf then
-		    return OrWhereBetween( column, lowValue, highValue )
+		    return OrWhereBetween( expression, lowValue, highValue )
 		  else
 		    return self
 		  end if
@@ -80,9 +80,9 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondOrWhereNotBetween(includeIf As Boolean, column As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
+		Function CondOrWhereNotBetween(includeIf As Boolean, expression As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
 		  if includeIf then
-		    return OrWhereNotBetween( column, lowValue, highValue )
+		    return OrWhereNotBetween( expression, lowValue, highValue )
 		  else
 		    return self
 		  end if
@@ -112,9 +112,9 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondWhere(includeIf As Boolean, column As String, comparison As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		Function CondWhere(includeIf As Boolean, expression As String, comparison As String, value As Variant) As SQLBuilder_MTC.WhereClause
 		  if includeIf then
-		    return Where( column, comparison, value )
+		    return Where( expression, comparison, value )
 		  else
 		    return self
 		  end if
@@ -123,15 +123,15 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondWhere(includeIf As Boolean, column As String, value As Variant) As SQLBuilder_MTC.WhereClause
-		  return CondWhere( includeIf, column, "=", value )
+		Function CondWhere(includeIf As Boolean, expression As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		  return CondWhere( includeIf, expression, "=", value )
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondWhereBetween(includeIf As Boolean, column As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
+		Function CondWhereBetween(includeIf As Boolean, expression As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
 		  if includeIf then
-		    return WhereBetween( column, lowValue, highValue )
+		    return WhereBetween( expression, lowValue, highValue )
 		  else
 		    return self
 		  end if
@@ -140,9 +140,9 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondWhereIn(includeIf As Boolean, column As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Function CondWhereIn(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
 		  if includeIf then
-		    return WhereIn( column, subQuery )
+		    return WhereIn( expression, subQuery )
 		  else
 		    return self
 		  end if
@@ -162,9 +162,9 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondWhereNotBetween(includeIf As Boolean, column As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
+		Function CondWhereNotBetween(includeIf As Boolean, expression As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
 		  if includeIf then
-		    return WhereNotBetween( column, lowValue, highValue )
+		    return WhereNotBetween( expression, lowValue, highValue )
 		  else
 		    return self
 		  end if
@@ -173,15 +173,15 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondWhereNotNull(includeIf As Boolean, column As String) As SQLBuilder_MTC.WhereClause
-		  return CondWhere( includeIf, column, "<>", nil )
+		Function CondWhereNotNull(includeIf As Boolean, expression As String) As SQLBuilder_MTC.WhereClause
+		  return CondWhere( includeIf, expression, "<>", nil )
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondWhereNull(includeIf As Boolean, column As String) As SQLBuilder_MTC.WhereClause
-		  return CondWhere( includeIf, column, "=", nil )
+		Function CondWhereNull(includeIf As Boolean, expression As String) As SQLBuilder_MTC.WhereClause
+		  return CondWhere( includeIf, expression, "=", nil )
 		  
 		End Function
 	#tag EndMethod
@@ -334,8 +334,8 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function OrderBy(ParamArray columnsOrExpressions() As String) As SQLBuilder_MTC.AdditionalClause
-		  AppendToArray OrderBys, columnsOrExpressions
+		Function OrderBy(ParamArray expression() As String) As SQLBuilder_MTC.AdditionalClause
+		  AppendToArray OrderBys, expression
 		  
 		  return self
 		End Function
@@ -349,31 +349,31 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function OrWhere(column As String, comparison As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		Function OrWhere(expression As String, comparison As String, value As Variant) As SQLBuilder_MTC.WhereClause
 		  dim values() as variant
 		  values.Append value
 		  
-		  AppendWhereParam column + comparison + kSQLPlaceholder, values, false, true
+		  AppendWhereParam expression + comparison + kSQLPlaceholder, values, false, true
 		  return self
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function OrWhere(column As String, value As Variant) As SQLBuilder_MTC.WhereClause
-		  return OrWhere( column, "=", value )
+		Function OrWhere(expression As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		  return OrWhere( expression, "=", value )
 		  
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function OrWhereBetween(column As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
+		Function OrWhereBetween(expression As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
 		  dim values() as variant
 		  values.Append lowValue
 		  values.Append highValue
 		  
-		  AppendWhereParam column + " BETWEEN ? AND ?", values, true, false
+		  AppendWhereParam expression + " BETWEEN ? AND ?", values, true, false
 		  return self
 		End Function
 	#tag EndMethod
@@ -387,12 +387,12 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function OrWhereNotBetween(column As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
+		Function OrWhereNotBetween(expression As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
 		  dim values() as variant
 		  values.Append lowValue
 		  values.Append highValue
 		  
-		  AppendWhereParam column + " NOT BETWEEN ? AND ?", values, false, true
+		  AppendWhereParam expression + " NOT BETWEEN ? AND ?", values, false, true
 		  return self
 		End Function
 	#tag EndMethod
@@ -449,14 +449,14 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Where(column As String, comparison As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		Function Where(expression As String, comparison As String, value As Variant) As SQLBuilder_MTC.WhereClause
 		  if value.IsNull then
 		    
 		    select case comparison.Trim
 		    case "=", "IS"
-		      return WhereNull( column )
+		      return WhereNull( expression )
 		    case else
-		      return WhereNotNull( column )
+		      return WhereNotNull( expression )
 		    end select
 		    
 		  else
@@ -468,7 +468,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 		      comparison = "<>"
 		    end select
 		    
-		    return WhereRaw( column + comparison + kSQLPlaceholder, value )
+		    return WhereRaw( expression + comparison + kSQLPlaceholder, value )
 		    
 		  end if
 		  
@@ -476,26 +476,26 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Where(column As String, value As Variant) As SQLBuilder_MTC.WhereClause
-		  return Where( column, "=", value )
+		Function Where(expression As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		  return Where( expression, "=", value )
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereBetween(column As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
+		Function WhereBetween(expression As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
 		  dim values() as variant
 		  values.Append lowValue
 		  values.Append highValue
 		  
-		  AppendWhereParam column + " BETWEEN ? AND ?", values, false, false
+		  AppendWhereParam expression + " BETWEEN ? AND ?", values, false, false
 		  return self
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereIn(column As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
-		  return Where( column, "IN", subQuery )
+		Function WhereIn(expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  return Where( expression, "IN", subQuery )
 		  
 		End Function
 	#tag EndMethod
@@ -509,34 +509,34 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereNotBetween(column As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
+		Function WhereNotBetween(expression As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
 		  dim values() as variant
 		  values.Append lowValue
 		  values.Append highValue
 		  
-		  AppendWhereParam column + " NOT BETWEEN ? AND ?", values, false, false
+		  AppendWhereParam expression + " NOT BETWEEN ? AND ?", values, false, false
 		  return self
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereNotIn(column As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
-		  return Where( column, "NOT IN", subQuery )
+		Function WhereNotIn(expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  return Where( expression, "NOT IN", subQuery )
 		  
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereNotNull(column As String) As SQLBuilder_MTC.WhereClause
-		  return Where( column, "<>", nil )
+		Function WhereNotNull(expression As String) As SQLBuilder_MTC.WhereClause
+		  return Where( expression, "<>", nil )
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereNull(column As String) As SQLBuilder_MTC.WhereClause
-		  return Where( column, "=", nil )
+		Function WhereNull(expression As String) As SQLBuilder_MTC.WhereClause
+		  return Where( expression, "=", nil )
 		  
 		End Function
 	#tag EndMethod
