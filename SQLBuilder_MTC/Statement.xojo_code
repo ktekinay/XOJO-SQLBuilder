@@ -1,6 +1,27 @@
 #tag Class
 Protected Class Statement
-Implements WhereClause,SelectClause,FromClause,AdditionalClause
+Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterface
+	#tag Method, Flags = &h21
+		Private Sub AppendFromParam()
+		  #pragma warning "Finish this!"
+		  
+		  dim f as new SQLBuilder_MTC.FromParams
+		  p.Expression = expression
+		  if not ( values is nil ) then
+		    values = GetTrueValues( values )
+		    for i as integer = 0 to values.Ubound
+		      p.Values.Append values( i )
+		    next
+		  end if
+		  
+		  p.IsNOT = isNOT
+		  p.IsOR = isOR
+		  
+		  FromParams.Append p
+		  
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h21
 		Private Sub AppendToArray(appendTo() As String, fromArr() As String)
 		  for i as integer =0 to fromArr.Ubound
@@ -15,6 +36,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 		  dim p as new SQLBuilder_MTC.WhereParams
 		  p.Expression = expression
 		  if not ( values is nil ) then
+		    values = GetTrueValues( values )
 		    for i as integer = 0 to values.Ubound
 		      p.Values.Append values( i )
 		    next
@@ -69,6 +91,38 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function CondOrWhereExists(includeIf As Boolean, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return OrWhereExists( subQuery )
+		  else
+		    return self
+		  end if
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondOrWhereIn(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return OrWhereIn( expression, subQuery )
+		  else
+		    return self
+		  end if
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondOrWhereIn(includeIf As Boolean, expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return OrWhereIn( expression, values )
+		  else
+		    return self
+		  end if
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function CondOrWhereNot(includeIf As Boolean, statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
 		  if includeIf then
 		    return OrWhereNot( statement )
@@ -91,6 +145,37 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function CondOrWhereNotExists(includeIf As Boolean, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return OrWhereNotExists( subQuery )
+		  else
+		    return self
+		  end if
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondOrWhereNotIn(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return OrWhereNotIn( expression, subQuery )
+		  else
+		    return self
+		  end if
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondOrWhereNotIn(includeIf As Boolean, expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return OrWhereNotIn( expression, values )
+		  else
+		    return self
+		  end if
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function CondOrWhereRaw(includeIf As Boolean, expression As String, ParamArray values() As String) As SQLBuilder_MTC.WhereClause
 		  if includeIf then
 		    return OrWhereRaw( expression, values )
@@ -101,9 +186,9 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondWhere(includeIf As Boolean, expression As SQLBuilder_MTC.Statement, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		Function CondWhere(includeIf As Boolean, statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
 		  if includeIf then
-		    return Where( expression, values )
+		    return Where( statement )
 		  else
 		    return self
 		  end if
@@ -140,6 +225,17 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function CondWhereExists(includeIf As Boolean, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return WhereExists( subQuery )
+		  else
+		    return self
+		  end if
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function CondWhereIn(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
 		  if includeIf then
 		    return WhereIn( expression, subQuery )
@@ -147,6 +243,16 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 		    return self
 		  end if
 		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereIn(includeIf As Boolean, expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return WhereIn( expression, values )
+		  else
+		    return self
+		  end if
 		End Function
 	#tag EndMethod
 
@@ -173,6 +279,37 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function CondWhereNotExists(includeIf As Boolean, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return WhereNotExists( subQuery )
+		  else
+		    return self
+		  end if
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereNotIn(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return WhereNotIn( expression, subQuery )
+		  else
+		    return self
+		  end if
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereNotIn(includeIf As Boolean, expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return WhereNotIn( expression, values )
+		  else
+		    return self
+		  end if
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function CondWhereNotNull(includeIf As Boolean, expression As String) As SQLBuilder_MTC.WhereClause
 		  return CondWhere( includeIf, expression, "<>", nil )
 		  
@@ -182,17 +319,6 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag Method, Flags = &h0
 		Function CondWhereNull(includeIf As Boolean, expression As String) As SQLBuilder_MTC.WhereClause
 		  return CondWhere( includeIf, expression, "=", nil )
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function CondWhereRaw(includeIf As Boolean, statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
-		  if includeIf then
-		    return WhereRaw( statement )
-		  else
-		    return self
-		  end if
 		  
 		End Function
 	#tag EndMethod
@@ -218,7 +344,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 
 	#tag Method, Flags = &h21
 		Private Sub DoSQLSelect(expression As String, values() As Variant)
-		  
+		  #pragma warning "Finish this!"
 		  
 		  'AppendToArray self.Columns, columns
 		  
@@ -226,9 +352,19 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function From(table As String, ParamArray tables() As String) As SQLBuilder_MTC.FromClause
-		  self.Tables.Append table
-		  AppendToArray self.Tables, tables
+		Function From(subQuery As SQLBuilder_MTC.Statement, alias As String) As SQLBuilder_MTC.FromClause
+		  #pragma warning "Finish this!"
+		  
+		  self.Tables.Append expression
+		  
+		  return self
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function From(expression As String) As SQLBuilder_MTC.FromClause
+		  self.Tables.Append expression
 		  
 		  return self
 		  
@@ -244,17 +380,112 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
-		Private Function GetTrueValues(values() As Variant) As Variant()
+		Private Function GetTrueValues(values As Variant) As Variant()
 		  //
 		  // A ParamArray might embed the true array inside another array
 		  // so will drill down and extract that
 		  //
 		  
-		  dim result() as variant = values
+		  dim result() as variant
+		  if values.IsNull then
+		    return result
+		  end if
 		  
-		  while result.Ubound = 0 and result( 0 ).IsArray
-		    result = result( 0 )
-		  wend
+		  dim autoValues as auto = values
+		  do
+		    dim ti as Xojo.Introspection.TypeInfo = Xojo.Introspection.GetType( autoValues )
+		    select case ti.FullName
+		    case "Date()"
+		      dim arr() as Date = autoValues
+		      redim result( arr.Ubound )
+		      for i as integer = 0 to arr.Ubound
+		        result( i ) = arr( i )
+		      next
+		      
+		    case "Xojo.Core.Date()"
+		      dim arr() as Xojo.Core.Date = autoValues
+		      redim result( arr.Ubound )
+		      for i as integer = 0 to arr.Ubound
+		        result( i ) = arr( i )
+		      next
+		      
+		    case "Object()" // Can't ever really be an object
+		      result = autoValues
+		      if result.Ubound = 0 and result( 0 ).IsArray then
+		        autoValues = result( 0 )
+		        continue do
+		      end if
+		      
+		    case "String()"
+		      dim arr() as string = autoValues
+		      redim result( arr.Ubound )
+		      for i as integer = 0 to arr.Ubound
+		        result( i ) = arr( i )
+		      next
+		      
+		    case "Text()"
+		      dim arr() as text = autoValues
+		      redim result( arr.Ubound )
+		      for i as integer = 0 to arr.Ubound
+		        result( i ) = arr( i )
+		      next
+		      
+		    case "Integer()"
+		      dim arr() as integer = autoValues
+		      redim result( arr.Ubound )
+		      for i as integer = 0 to arr.Ubound
+		        result( i ) = arr( i )
+		      next
+		      
+		    case "Int32()"
+		      dim arr() as Int32 = autoValues
+		      redim result( arr.Ubound )
+		      for i as integer = 0 to arr.Ubound
+		        result( i ) = arr( i )
+		      next
+		      
+		    case "Int64()"
+		      dim arr() as Int64 = autoValues
+		      redim result( arr.Ubound )
+		      for i as integer = 0 to arr.Ubound
+		        result( i ) = arr( i )
+		      next
+		      
+		    case "Double()"
+		      dim arr() as double = autoValues
+		      redim result( arr.Ubound )
+		      for i as integer = 0 to arr.Ubound
+		        result( i ) = arr( i )
+		      next
+		      
+		    case "Single()"
+		      dim arr() as single = autoValues
+		      redim result( arr.Ubound )
+		      for i as integer = 0 to arr.Ubound
+		        result( i ) = arr( i )
+		      next
+		      
+		    case "Currency()"
+		      dim arr() as currency = autoValues
+		      redim result( arr.Ubound )
+		      for i as integer = 0 to arr.Ubound
+		        result( i ) = arr( i )
+		      next
+		      
+		    case "Boolean()"
+		      dim arr() as boolean = autoValues
+		      redim result( arr.Ubound )
+		      for i as integer = 0 to arr.Ubound
+		        result( i ) = arr( i )
+		      next
+		      
+		    end select
+		    
+		    //
+		    // If we get here, we've processed as much as we can
+		    //
+		    exit do
+		  loop
 		  
 		  return result
 		End Function
@@ -290,6 +521,13 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 		  Tables.Append "JOIN " + table + " ON (" + onCondition + ")"
 		  return self
 		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function JoinRaw(expression As String) As SQLBuilder_MTC.FromClause
+		  self.Tables.Append expression
+		  return self
 		End Function
 	#tag EndMethod
 
@@ -379,6 +617,28 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function OrWhereExists(subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  return OrWhere( "", "EXISTS", subQuery )
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OrWhereIn(expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  return OrWhere( expression, "IN", subQuery )
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OrWhereIn(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		  dim placeholders() as string = ValuesToPlaceholders( values )
+		  AppendWhereParam expression + " IN (" + join( placeholders, "," ) + ")", values, false, true
+		  return self
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function OrWhereNot(statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
 		  AppendWhereParam statement, nil, true, true
 		  return self
@@ -393,6 +653,28 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 		  values.Append highValue
 		  
 		  AppendWhereParam expression + " NOT BETWEEN ? AND ?", values, false, true
+		  return self
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OrWhereNotExists(subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  return OrWhere( "", "NOT EXISTS", subQuery )
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OrWhereNotIn(expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  return OrWhere( expression, "NOT IN", subQuery )
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OrWhereNotIn(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		  dim placeholders() as string = ValuesToPlaceholders( values )
+		  AppendWhereParam expression + " NOT IN (" + join( placeholders, "," ) + ")", values, false, true
 		  return self
 		End Function
 	#tag EndMethod
@@ -423,13 +705,17 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 
 	#tag Method, Flags = &h0
 		Function SQLSelect(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.SelectClause
-		  return SQLSelect( expression, values )
+		  OperationType = "SELECT"
+		  DoSQLSelect expression, values
+		  return self
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function SQLSelectDistinct(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.SelectClause
-		  return SQLSelectDistinct( expression, values )
+		  OperationType = "SELECT DISTINCT"
+		  DoSQLSelect expression, values
+		  return self
 		End Function
 	#tag EndMethod
 
@@ -438,6 +724,20 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 		  #pragma warning "Finish this!"
 		  
 		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function ValuesToPlaceholders(values() As Variant) As String()
+		  dim result() as string
+		  if values is nil then
+		    return result
+		  end if
+		  values = GetTrueValues( values )
+		  for each v as variant in values
+		    result.Append kSQLPlaceholder
+		  next
+		  return result
 		End Function
 	#tag EndMethod
 
@@ -494,9 +794,25 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function WhereExists(subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  return Where( "", "EXISTS", subQuery )
+		  
+		  return self
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function WhereIn(expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
 		  return Where( expression, "IN", subQuery )
 		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function WhereIn(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		  dim placeholders() as string = ValuesToPlaceholders( values )
+		  AppendWhereParam expression + " IN (" + join( placeholders, "," ) + ")", values, false, false
+		  return self
 		End Function
 	#tag EndMethod
 
@@ -520,10 +836,26 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function WhereNotExists(subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  return Where( "", "NOT EXISTS", subQuery )
+		  
+		  return self
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function WhereNotIn(expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
 		  return Where( expression, "NOT IN", subQuery )
 		  
 		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function WhereNotIn(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		  dim placeholders() as string = ValuesToPlaceholders( values )
+		  AppendWhereParam expression + " NOT IN (" + join( placeholders, "," ) + ")", values, false, false
+		  return self
 		End Function
 	#tag EndMethod
 
@@ -553,6 +885,10 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 
 	#tag Property, Flags = &h21
 		Private Columns() As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private FromParams() As FromParam
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
@@ -624,10 +960,6 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause
 		#tag EndGetter
 		StringValue As String
 	#tag EndComputedProperty
-
-	#tag Property, Flags = &h21
-		Private Tables() As String
-	#tag EndProperty
 
 	#tag Property, Flags = &h21
 		Private WhereParams() As SQLBuilder_MTC.WhereParams

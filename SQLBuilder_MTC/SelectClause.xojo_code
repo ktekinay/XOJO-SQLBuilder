@@ -1,13 +1,13 @@
 #tag Interface
 Private Interface SelectClause
 	#tag Method, Flags = &h0
-		Function From(table As String, ParamArray tables() As String) As SQLBuilder_MTC.FromClause
+		Function From(subQuery As SQLBuilder_MTC.Statement, alias As String) As SQLBuilder_MTC.FromClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function SQLSelect(includeIf As Boolean, expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.SelectClause
+		Function From(expression As String) As SQLBuilder_MTC.FromClause
 		  
 		End Function
 	#tag EndMethod

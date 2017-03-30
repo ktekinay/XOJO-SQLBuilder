@@ -1,13 +1,103 @@
 #tag Interface
 Private Interface FromClause
 	#tag Method, Flags = &h0
+		Function CondWhere(includeIf As Boolean, stement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhere(includeIf As Boolean, expression As String, comparison As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhere(includeIf As Boolean, expression As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereBetween(includeIf As Boolean, expression As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereExists(includeIf As Boolean, statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereIn(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereIn(includeIf As Boolean, expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereNot(includeIf As Boolean, statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereNotBetween(includeIf As Boolean, expression As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereNotExists(includeIf As Boolean, statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereNotIn(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereNotIn(includeIf As Boolean, expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereNotNull(includeIf As Boolean, expression As String) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereNull(includeIf As Boolean, expression As String) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereRaw(includeIf As Boolean, expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function CrossJoin(table As String) As SQLBuilder_MTC.FromClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function From(table As String, ParamArray tables() As String) As SQLBuilder_MTC.FromClause
+		Function From(expresison As String) As SQLBuilder_MTC.FromClause
 		  
 		End Function
 	#tag EndMethod
@@ -31,6 +121,12 @@ Private Interface FromClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function JoinRaw(expression As String) As SQLBuilder_MTC.FromClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function LeftJoin(table As String, onCondition As String) As SQLBuilder_MTC.FromClause
 		  
 		End Function
@@ -49,73 +145,91 @@ Private Interface FromClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Where(includeIf As Boolean, column As String, comparison As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		Function Where(statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Where(includeIf As Boolean, column As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		Function Where(expression As String, comparison As String, value As Variant) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Where(column As String, comparison As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		Function Where(expression As String, value As Variant) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Where(column As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		Function WhereBetween(expression As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereIn(column As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Function WhereExists(statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereNot() As SQLBuilder_MTC.WhereClause
+		Function WhereIn(expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereNotIn(column As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Function WhereIn(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereNotNull(column As String) As SQLBuilder_MTC.WhereClause
+		Function WhereNot(statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereNull(column As String) As SQLBuilder_MTC.WhereClause
+		Function WhereNotBetween(expression As String, lowValue As Variant, highValue As Variant) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereRaw(includeIf As Boolean, sql As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		Function WhereNotExists(statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereRaw(sql As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		Function WhereNotIn(expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereRaw(sql As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		Function WhereNotIn(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function WhereNotNull(expression As String) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function WhereNull(expression As String) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function WhereRaw(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
