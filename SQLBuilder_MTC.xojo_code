@@ -120,6 +120,14 @@ Protected Module SQLBuilder_MTC
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
+		Protected Function SQLWith(alias As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WithClause
+		  dim s as new SQLBuilder_MTC.Statement
+		  return s.SQLWith( alias, subQuery )
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
 		Protected Function Where(statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
 		  dim s as new SQLBuilder_MTC.Statement
 		  return s.Where( statement )

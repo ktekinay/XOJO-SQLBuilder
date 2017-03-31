@@ -1,6 +1,6 @@
 #tag Class
 Protected Class Statement
-Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterface
+Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterface, WithClause
 	#tag Method, Flags = &h21
 		Private Sub AppendFromParam()
 		  #pragma warning "Finish this!"
@@ -352,7 +352,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function From(subQuery As SQLBuilder_MTC.Statement, alias As String) As SQLBuilder_MTC.FromClause
+		Function From(subQuery As SQLBuilder_MTC.Statement, asAlias As String, isLateral As Boolean = False) As SQLBuilder_MTC.FromClause
 		  #pragma warning "Finish this!"
 		  
 		  self.Tables.Append expression
@@ -720,6 +720,18 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function SQLWith(alias As String, subQuery As SQLBuilder_MTC.Statement) As WithClause
+		  dim w as new SQLBuilder_MTC.WithParams
+		  
+		  w.SubQuery  = subQuery
+		  w.Alias = alias
+		  WithParams.Append w
+		  return self
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function ToString() As String
 		  #pragma warning "Finish this!"
 		  
@@ -963,6 +975,10 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 
 	#tag Property, Flags = &h21
 		Private WhereParams() As SQLBuilder_MTC.WhereParams
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private WithParams() As WithParams
 	#tag EndProperty
 
 

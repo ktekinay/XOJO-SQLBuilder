@@ -1,19 +1,11 @@
 #tag Class
-Private Class FromParams
+Private Class WithParams
 	#tag Property, Flags = &h0
-		Expression As Variant
+		Alias As String
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		IsLateral As Boolean
-	#tag EndProperty
-
-	#tag Property, Flags = &h0
-		JoinExpression As String
-	#tag EndProperty
-
-	#tag Property, Flags = &h0
-		OnCondition As String
+		SubQuery As SQLBuilder_MTC.Statement
 	#tag EndProperty
 
 
@@ -37,6 +29,11 @@ Private Class FromParams
 			Visible=true
 			Group="ID"
 			Type="String"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="SubQuery"
+			Group="Behavior"
+			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"
