@@ -1,24 +1,47 @@
 #tag Class
 Protected Class Statement
-Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterface, WithClause
+Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterface,WithClause
 	#tag Method, Flags = &h21
-		Private Sub AppendFromParam()
-		  #pragma warning "Finish this!"
-		  
+		Private Sub AppendFromParam(isLateral As Boolean, expression As Variant, asAlias As String, joinExpression As String, onCondition As String, values() As Variant)
 		  dim f as new SQLBuilder_MTC.FromParams
-		  p.Expression = expression
-		  if not ( values is nil ) then
-		    values = GetTrueValues( values )
-		    for i as integer = 0 to values.Ubound
-		      p.Values.Append values( i )
-		    next
+		  
+		  f.IsLateral = isLateral
+		  f.Expression = expression
+		  f.AsAlias = asAlias.Trim
+		  f.JoinExpression = joinExpression.Trim
+		  f.OnCondition = onCondition.Trim
+		  AppendToVariantArray f.Values, GetTrueValues( values )
+		  
+		  FromParams.Append f
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub AppendLineToStringBuilder(stringBuilder() As String, indent As String, ParamArray items() As String)
+		  stringBuilder.Append indent
+		  for i as integer = 0 to items.Ubound
+		    stringBuilder.Append items( i ).Trim
+		    if i < items.Ubound then
+		      stringBuilder.Append " "
+		    end if
+		  next
+		  stringBuilder.Append EndOfLine
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub AppendSelectParam(expression As String, values() As Variant)
+		  expression = expression.Trim
+		  if expression = "" then
+		    expression = "*"
 		  end if
 		  
-		  p.IsNOT = isNOT
-		  p.IsOR = isOR
-		  
-		  FromParams.Append p
-		  
+		  dim s as new SQLBuilder_MTC.SelectParams
+		  s.Expression = expression
+		  s.Values = GetTrueValues( values )
+		  SelectParams.Append s
 		End Sub
 	#tag EndMethod
 
@@ -32,20 +55,149 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
+		Private Sub AppendToVariantArray(appendTo() As Variant, fromArr() As Variant)
+		  if fromArr is nil then
+		    return
+		  end if
+		  
+		  for i as integer = 0 to fromArr.Ubound
+		    appendTo.Append fromArr( i )
+		  next
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
 		Private Sub AppendWhereParam(expression As Variant, values() As Variant, isNOT As Boolean, isOR As Boolean)
 		  dim p as new SQLBuilder_MTC.WhereParams
 		  p.Expression = expression
-		  if not ( values is nil ) then
-		    values = GetTrueValues( values )
-		    for i as integer = 0 to values.Ubound
-		      p.Values.Append values( i )
-		    next
-		  end if
+		  AppendToVariantArray p.Values, GetTrueValues( values )
 		  
 		  p.IsNOT = isNOT
 		  p.IsOR = isOR
 		  
 		  WhereParams.Append p
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub BuildFromClause(indent As String, stringBuilder() As String, values() As Variant)
+		  for i as integer = 0 to FromParams.Ubound
+		    dim f as SQLBuilder_MTC.FromParams = FromParams( i )
+		    
+		    //
+		    // We can't use AppendLineToStringBuilder here, unfortunately
+		    //
+		    if f.JoinExpression = "" and i > 0 then
+		      stringBuilder.Append ","
+		    end if
+		    
+		    if i > 0 then
+		      stringBuilder.Append EndOfLine
+		    end if
+		    
+		    stringBuilder.Append indent
+		    
+		    if f.IsLateral then
+		      stringBuilder.Append "LATERAL "
+		    end if
+		    
+		    if f.JoinExpression <> "" then
+		      stringBuilder.Append f.JoinExpression
+		      stringBuilder.Append " "
+		    end if
+		    
+		    if f.Expression isa SQLBuilder_MTC.Statement then
+		      dim sb as SQLBuilder_MTC.Statement = f.Expression
+		      AppendLineToStringBuilder stringBuilder, indent, "("
+		      sb.BuildSQL indent + kIndentString, stringBuilder, values
+		      AppendLineToStringBuilder stringBuilder, indent, ") AS", f.AsAlias
+		    elseif f.Expression.Type = Variant.TypeString then
+		      stringBuilder.Append f.Expression.StringValue
+		      if f.AsAlias <> "" then
+		        stringBuilder.Append " AS "
+		        stringBuilder.Append f.AsAlias
+		      end if
+		    end if
+		    
+		    if f.OnCondition <> "" then
+		      stringBuilder.Append " ON ("
+		      stringBuilder.Append f.OnCondition
+		      stringBuilder.Append ")"
+		    end if
+		    
+		    AppendToVariantArray values, f.Values
+		  next i
+		  
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub BuildSelectClause(indent As String, stringBuilder() As String, values() As Variant)
+		  for i as integer = 0 to SelectParams.Ubound
+		    dim p as SQLBuilder_MTC.SelectParams = SelectParams( i )
+		    if p.Expression = "" then
+		      p.Expression = "*"
+		    end if
+		    AppendLineToStringBuilder stringBuilder, indent, p.Expression + _
+		    if( i < SelectParams.Ubound, ", ", "" )
+		    AppendToVariantArray values, p.Values
+		  next
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub BuildSQL(indent As String, stringBuilder() As String, values() As Variant)
+		  dim nextIndent as string = indent + kIndentString
+		  
+		  //
+		  // With
+		  //
+		  BuildWithClause indent, stringBuilder, values
+		  
+		  select case OperationType
+		  case ""
+		    //
+		    // It's a partial statement
+		    //
+		    
+		  case "SELECT", "SELECT DISTINCT"
+		    AppendLineToStringBuilder stringBuilder, indent, OperationType
+		    BuildSelectClause nextIndent, stringBuilder, values
+		    
+		  case else
+		    raise new SQLBuilder_MTC.SQLBuilderException( "The " + OperationType + " operation is not yet supported", CurrentMethodName )
+		    
+		  end select
+		  
+		  //
+		  // From
+		  //
+		  if FromParams.Ubound <> -1 then
+		    AppendLineToStringBuilder stringBuilder, indent, "FROM"
+		    BuildFromClause nextIndent, stringBuilder, values
+		  end if
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub BuildWithClause(indent As String, stringBuilder() As String, values() As Variant)
+		  for i as integer = 0 to WithParams.Ubound
+		    dim p as SQLBuilder_MTC.WithParams = WithParams( i )
+		    
+		    AppendLineToStringBuilder stringBuilder, indent, "WITH", p.Alias, "AS ("
+		    
+		    if p.SubQuery isa object then
+		      p.SubQuery.BuildSql indent + kIndentString, stringBuilder, values
+		      stringBuilder.Append EndOfLine
+		    end if
+		    
+		    AppendLineToStringBuilder stringBuilder, indent, ")"
+		  next i
 		  
 		End Sub
 	#tag EndMethod
@@ -336,26 +488,15 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 
 	#tag Method, Flags = &h0
 		Function CrossJoin(table As String) As SQLBuilder_MTC.FromClause
-		  Tables.Append "CROSS JOIN " + table 
+		  AppendFromParam false, table, "", "CROSS JOIN", "", nil
 		  return self
 		  
 		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Sub DoSQLSelect(expression As String, values() As Variant)
-		  #pragma warning "Finish this!"
-		  
-		  'AppendToArray self.Columns, columns
-		  
-		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function From(subQuery As SQLBuilder_MTC.Statement, asAlias As String, isLateral As Boolean = False) As SQLBuilder_MTC.FromClause
-		  #pragma warning "Finish this!"
-		  
-		  self.Tables.Append expression
+		  AppendFromParam isLateral, subQuery, asAlias, "", "", nil
 		  
 		  return self
 		  
@@ -363,8 +504,8 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function From(expression As String) As SQLBuilder_MTC.FromClause
-		  self.Tables.Append expression
+		Function From(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
+		  AppendFromParam false, expression, "", "", "", values
 		  
 		  return self
 		  
@@ -372,8 +513,8 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function FullJoin(table As String, onCondition As String) As SQLBuilder_MTC.FromClause
-		  Tables.Append "FULL JOIN " + table + " ON (" + onCondition + ")"
+		Function FullJoin(table As String, onCondition As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
+		  AppendFromParam false, table, "", "FULL JOIN", onCondition, values
 		  return self
 		  
 		End Function
@@ -509,31 +650,32 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function InnerJoin(table As String, onCondition As String) As SQLBuilder_MTC.FromClause
-		  Tables.Append "INNER JOIN " + table + " ON (" + onCondition + ")"
+		Function InnerJoin(table As String, onCondition As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
+		  AppendFromParam false, table, "", "INNER JOIN", onCondition, values
 		  return self
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Join(table As String, onCondition As String) As SQLBuilder_MTC.FromClause
-		  Tables.Append "JOIN " + table + " ON (" + onCondition + ")"
+		Function Join(table As String, onCondition As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
+		  AppendFromParam false, table, "", "JOIN", onCondition, values
 		  return self
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function JoinRaw(expression As String) As SQLBuilder_MTC.FromClause
-		  self.Tables.Append expression
+		Function JoinRaw(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
+		  AppendFromParam false, "", "", expression, "", values
 		  return self
+		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function LeftJoin(table As String, onCondition As String) As SQLBuilder_MTC.FromClause
-		  Tables.Append "LEFT JOIN " + table + " ON (" + onCondition + ")"
+		Function LeftJoin(table As String, onCondition As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
+		  AppendFromParam false, table, "", "LEFT JOIN", onCondition, values
 		  return self
 		  
 		End Function
@@ -687,17 +829,89 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function OuterJoin(table As String, onCondition As String) As SQLBuilder_MTC.FromClause
-		  #pragma warning "Finish this!"
-		  
+		Function OuterJoin(table As String, onCondition As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
+		  AppendFromParam false, table, "", "OUTER JOIN", onCondition, values
 		  return self
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function RightJoin(table As String, onCondition As String) As SQLBuilder_MTC.FromClause
-		  Tables.Append "RIGHT JOIN " + table + " ON (" + onCondition + ")"
+		Function Prepare(db As Database) As PreparedSQLStatement
+		  dim values() as variant
+		  dim phType as SQLBuilder_MTC.PHTypes = SQLBuilder_MTC.PHTypeOfDatabase( db )
+		  
+		  dim sql as string = ToString( phType, values )
+		  
+		  dim ps as PreparedSQLStatement = db.Prepare( sql )
+		  for i as integer = 0 to values.Ubound
+		    dim v as variant = values( i )
+		    ps.Bind i, v
+		    if not ( db isa PostgreSQLDatabase ) then
+		      dim bindType as integer = ValueToBindType( v, db )
+		      ps.BindType i, bindType
+		    end if
+		  next
+		  
+		  return ps
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function ReplacePlaceHolders(sql As String, phType As SQLBuilder_MTC.PHTypes) As String
+		  if phType = SQLBuilder_MTC.PHTypes.QuestionMark then
+		    return sql
+		  end if
+		  
+		  dim placeholderPrefix as string
+		  select case phType
+		  case SQLBuilder_MTC.PHTypes.QuestionMarkNumber
+		    placeholderPrefix = "?"
+		  case SQLBuilder_MTC.PHTypes.ColonName
+		    placeholderPrefix = ":"
+		  case SQLBuilder_MTC.PHTypes.DollarSignNumber
+		    placeholderPrefix = "$"
+		  case else
+		    raise new SQLBuilderException( "Unknown placeholder type", CurrentMethodName )
+		  end select
+		  dim nextPlaceholderIndex as integer = 1
+		  
+		  dim chars() as string = sql.Split( "" )
+		  dim inQuote as boolean
+		  dim quoteChar as string
+		  
+		  for charIndex as integer = 0 to chars.Ubound
+		    dim char as string = chars( charIndex )
+		    
+		    if inQuote then
+		      if char = quoteChar then
+		        quoteChar = ""
+		        inQuote = false
+		      end if
+		      
+		    else // not inQuote
+		      select case char
+		      case """", "'"
+		        quoteChar = char
+		        inQuote = true
+		        
+		      case SQLBuilder_MTC.kSQLPlaceholder
+		        chars( charIndex ) = placeholderPrefix + str( nextPlaceholderIndex )
+		        nextPlaceholderIndex = nextPlaceholderIndex + 1
+		        
+		      end select
+		    end if
+		  next
+		  
+		  dim result as string = join( chars, "" )
+		  return result
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function RightJoin(table As String, onCondition As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
+		  AppendFromParam false, table, "", "RIGHT JOIN", onCondition, values
 		  return self
 		  
 		End Function
@@ -706,7 +920,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag Method, Flags = &h0
 		Function SQLSelect(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.SelectClause
 		  OperationType = "SELECT"
-		  DoSQLSelect expression, values
+		  AppendSelectParam expression, values
 		  return self
 		End Function
 	#tag EndMethod
@@ -714,7 +928,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag Method, Flags = &h0
 		Function SQLSelectDistinct(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.SelectClause
 		  OperationType = "SELECT DISTINCT"
-		  DoSQLSelect expression, values
+		  AppendSelectParam expression, values
 		  return self
 		End Function
 	#tag EndMethod
@@ -732,9 +946,35 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function ToString() As String
-		  #pragma warning "Finish this!"
+		Function ToString(db As Database) As String
+		  dim phType as SQLBuilder_MTC.PHTypes = SQLBuilder_MTC.PHTypes.QuestionMark
 		  
+		  if db isa object then
+		    phType = SQLBuilder_MTC.PHTypeOfDatabase( db )
+		  end if
+		  
+		  return ToString( phType )
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function ToString(phType As SQLBuilder_MTC.PHTypes = SQLBuilder_MTC.PHTypes.QuestionMark) As String
+		  dim values() as variant
+		  return ToString( phType, values )
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function ToString(phType As SQLBuilder_MTC.PHTypes, values() As Variant) As String
+		  dim stringBuilder() as string
+		  
+		  BuildSQL "", stringBuilder, values
+		  
+		  dim sql as string = join( stringBuilder, "" )
+		  sql = ReplacePlaceHolders( sql, phType )
+		  return sql
 		  
 		End Function
 	#tag EndMethod
@@ -750,6 +990,71 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		    result.Append kSQLPlaceholder
 		  next
 		  return result
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function ValueToBindType(ByRef value As Variant, db As Database) As Integer
+		  dim type as integer = -1
+		  
+		  select case db
+		  case isa SQLiteDatabase
+		    select case value.Type
+		    case Variant.TypeBoolean
+		      type = SQLitePreparedStatement.SQLITE_BOOLEAN
+		    case Variant.TypeDate
+		      value = value.DateValue.SQLDateTime
+		      type = SQLitePreparedStatement.SQLITE_TEXT
+		    case Variant.TypeDouble, Variant.TypeSingle
+		      type = SQLitePreparedStatement.SQLITE_DOUBLE
+		    case Variant.TypeInt64, Variant.TypeInt32, Variant.TypeInteger
+		      type = SQLitePreparedStatement.SQLITE_INTEGER
+		    case Variant.TypeNil
+		      type = SQLitePreparedStatement.SQLITE_NULL
+		    case Variant.TypeString, Variant.TypeText
+		      type = SQLitePreparedStatement.SQLITE_TEXT
+		    case else
+		      type = SQLitePreparedStatement.SQLITE_BLOB
+		    end select
+		    
+		  case isa MySQLCommunityServer
+		    select case value.Type
+		    case Variant.TypeBoolean
+		      value = if( value.BooleanValue, 1, 0 )
+		      type = MySQLPreparedStatement.MYSQL_TYPE_TINY
+		    case Variant.TypeDate
+		      type = MySQLPreparedStatement.MYSQL_TYPE_DATETIME
+		    case Variant.TypeDouble, Variant.TypeSingle
+		      type = MySQLPreparedStatement.MYSQL_TYPE_DOUBLE
+		    case Variant.TypeInt64
+		      type = MySQLPreparedStatement.MYSQL_TYPE_LONGLONG
+		    case Variant.TypeInt32, Variant.TypeInteger
+		      type = MySQLPreparedStatement.MYSQL_TYPE_LONG
+		    case Variant.TypeNil
+		      type = MySQLPreparedStatement.MYSQL_TYPE_NULL
+		    case Variant.TypeString, Variant.TypeText
+		      type = MySQLPreparedStatement.MYSQL_TYPE_STRING
+		    case else
+		      type = MySQLPreparedStatement.MYSQL_TYPE_BLOB
+		    end select
+		    
+		  case isa MSSQLServerDatabase
+		    raise new SQLBuilder_MTC.SQLBuilderException( "MSSQLServerDatabase is not yet supported", CurrentMethodName )
+		    
+		  case isa PostgreSQLDatabase
+		    //
+		    // Do nothing
+		    //
+		    
+		  case isa ODBCDatabase
+		    raise new SQLBuilder_MTC.SQLBuilderException( "ODBCDatabase is not yet supported", CurrentMethodName )
+		    
+		  case isa OracleDatabase
+		    raise new SQLBuilder_MTC.SQLBuilderException( "OracleDatabase is not yet supported", CurrentMethodName )
+		    
+		  end select
+		  
+		  return type
 		End Function
 	#tag EndMethod
 
@@ -896,11 +1201,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 
 
 	#tag Property, Flags = &h21
-		Private Columns() As String
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
-		Private FromParams() As FromParam
+		Private FromParams() As SQLBuilder_MTC.FromParams
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
@@ -928,14 +1229,19 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		#tag Setter
 			Set
 			  if mOperationType <> "" then
-			    //
-			    // It was already selected, so this is an error
-			    //
-			    dim err as new SQLBuilderException( "You can only use one operation type", CurrentMethodName )
-			    raise err
+			    if  mOperationType.Left( 5 ) <> value.Left( 5 ) then
+			      //
+			      // It was already selected, so this is an error
+			      //
+			      dim err as new SQLBuilderException( "You can only use one operation type", CurrentMethodName )
+			      raise err
+			    end if
+			    
+			  else
+			    mOperationType = value
 			  end if
 			  
-			  mOperationType = value
+			  
 			End Set
 		#tag EndSetter
 		Private OperationType As String
@@ -943,6 +1249,10 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 
 	#tag Property, Flags = &h21
 		Private OrderBys() As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private SelectParams() As SQLBuilder_MTC.SelectParams
 	#tag EndProperty
 
 	#tag ComputedProperty, Flags = &h21
@@ -966,7 +1276,8 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  return self
+			  return ToString( nil )
+			  
 			  
 			End Get
 		#tag EndGetter
@@ -980,6 +1291,10 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag Property, Flags = &h21
 		Private WithParams() As WithParams
 	#tag EndProperty
+
+
+	#tag Constant, Name = kIndentString, Type = String, Dynamic = False, Default = \"  ", Scope = Private
+	#tag EndConstant
 
 
 	#tag ViewBehavior

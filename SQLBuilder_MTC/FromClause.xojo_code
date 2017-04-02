@@ -103,49 +103,61 @@ Private Interface FromClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function From(expresison As String) As SQLBuilder_MTC.FromClause
+		Function From(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function FullJoin(table As String, onCondition As String) As SQLBuilder_MTC.FromClause
+		Function FullJoin(table As String, onCondition As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function InnerJoin(table As String, onCondition As String) As SQLBuilder_MTC.FromClause
+		Function InnerJoin(table As String, onCondition As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Join(table As String, onCondition As String) As SQLBuilder_MTC.FromClause
+		Function Join(table As String, onCondition As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function JoinRaw(expression As String) As SQLBuilder_MTC.FromClause
+		Function JoinRaw(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function LeftJoin(table As String, onCondition As String) As SQLBuilder_MTC.FromClause
+		Function LeftJoin(table As String, onCondition As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function OuterJoin(table As String, onCondition As String) As SQLBuilder_MTC.FromClause
+		Function OuterJoin(table As String, onCondition As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function RightJoin(table As String, onCondition As String) As SQLBuilder_MTC.FromClause
+		Function RightJoin(table As String, onCondition As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function ToString(db As Database) As String
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function ToString(Optional phType As SQLBuilder_MTC.PHTypes) As String
 		  
 		End Function
 	#tag EndMethod

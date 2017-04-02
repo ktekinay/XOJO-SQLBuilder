@@ -106,7 +106,24 @@ Protected Module SQLBuilder_MTC
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function SQLSelect(expression As String, values() As Variant = Nil) As SQLBuilder_MTC.SelectClause
+		Protected Function PHTypeOfDatabase(db As Database) As SQLBuilder_MTC.PHTypes
+		  dim phType as SQLBuilder_MTC.PHTypes = SQLBuilder_MTC.PHTypes.QuestionMark
+		  
+		  select case db
+		  case isa SQLiteDatabase,isa  MySQLCommunityServer, isa MSSQLServerDatabase
+		    phType = SQLBuilder_MTC.PHTypes.QuestionMark
+		    
+		  case isa PostgreSQLDatabase
+		    phType = SQLBuilder_MTC.PHTypes.DollarSignNumber
+		    
+		  end select
+		  
+		  return PHType
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function SQLSelect(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.SelectClause
 		  dim s as new SQLBuilder_MTC.Statement
 		  return s.SQLSelect( expression, values )
 		End Function
@@ -235,6 +252,14 @@ Protected Module SQLBuilder_MTC
 
 	#tag Constant, Name = kSQLPlaceholder, Type = String, Dynamic = False, Default = \"\?", Scope = Public
 	#tag EndConstant
+
+
+	#tag Enum, Name = PHTypes, Type = Integer, Flags = &h1
+		QuestionMark
+		  QuestionMarkNumber
+		  DollarSignNumber
+		ColonName
+	#tag EndEnum
 
 
 	#tag ViewBehavior

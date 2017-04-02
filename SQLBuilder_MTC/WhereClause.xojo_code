@@ -242,6 +242,18 @@ Implements AdditionalClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function ToString(db As Database) As String
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function ToString(Optional phType As SQLBuilder_MTC.PHTypes) As String
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function Where(statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
 		  
 		End Function

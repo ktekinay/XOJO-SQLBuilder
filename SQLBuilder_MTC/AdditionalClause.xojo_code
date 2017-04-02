@@ -12,6 +12,18 @@ Private Interface AdditionalClause
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function ToString(db As Database) As String
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function ToString(Optional phType As SQLBuilder_MTC.PHTypes) As String
+		  
+		End Function
+	#tag EndMethod
+
 
 End Interface
 #tag EndInterface

@@ -158,6 +158,58 @@ Inherits TestGroup
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub ReplaceHoldersTest()
+		  dim sb as new SQLBuilder_MTC.Statement
+		  dim ut as SQLBuilder_MTC.UnitTestInterface = sb
+		  
+		  dim sql as string = """some string?"" = ? and 'another string?' = ?"
+		  dim expected as string = """some string?"" = $1 and 'another string?' = $2"
+		  
+		  dim actual as string = ut.ReplacePlaceHolders( sql, SQLBuilder_MTC.PHTypes.DollarSignNumber )
+		  
+		  Assert.AreEqual expected, actual
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub SelectClauseTest()
+		  dim sql as string 
+		  
+		  sql = SQLBuilder_MTC.SQLSelect( "*" ).ToString
+		  sql = SqueezeWhitespace( sql )
+		  Assert.AreEqual "SELECT *", sql
+		  
+		  sql = SQLBuilder_MTC.SQLSelect( "a, b, c" ).ToString
+		  sql = SqueezeWhitespace( sql )
+		  Assert.AreEqual "SELECT a, b, c", sql
+		  
+		  sql = SQLBuilder_MTC.SQLSelect( "a, b" ).SQLSelect( "c" ).ToString
+		  sql = SqueezeWhitespace( sql )
+		  Assert.AreEqual "SELECT a, b, c", sql
+		  
+		  sql = SQLBuilder_MTC.SQLSelectDistinct( "a, b" ).SQLSelect( "c" ).ToString
+		  sql = SqueezeWhitespace( sql )
+		  Assert.AreEqual "SELECT DISTINCT a, b, c", sql
+		  
+		  sql = SQLBuilder_MTC.SQLSelect( "a = ?", 1 ).ToString( SQLBuilder_MTC.PHTypes.DollarSignNumber )
+		  sql = SqueezeWhitespace( sql )
+		  Assert.AreEqual "SELECT a = $1", sql
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function SqueezeWhitespace(s As String) As String
+		  dim rx as new RegEx
+		  rx.SearchPattern = "\s+"
+		  rx.ReplacementPattern = " "
+		  rx.Options.ReplaceAllMatches = true
+		  
+		  s = rx.Replace( s )
+		  return s.Trim
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub ValuesToPlaceholdersTest()
 		  dim sb as new SQLBuilder_MTC.Statement
 		  dim ut as SQLBuilder_MTC.UnitTestInterface = sb
