@@ -14,6 +14,12 @@ Implements StatementInterface
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function Prepare(db As Database) As PreparedSQLStatement
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function ToString(db As Database) As String
 		  
 		End Function

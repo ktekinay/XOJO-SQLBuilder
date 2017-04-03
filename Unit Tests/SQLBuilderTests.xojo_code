@@ -2,6 +2,36 @@
 Protected Class SQLBuilderTests
 Inherits TestGroup
 	#tag Method, Flags = &h0
+		Sub AdditionalClauseTest()
+		  dim sql as string 
+		  
+		  sql = SQLBuilder_MTC.SQLSelect( "*" ).From( "table" ).Limit( 1 ).Offset( 5 ).ToString
+		  sql = SqueezeWhitespace( sql )
+		  Assert.AreEqual "SELECT * FROM table LIMIT 1 OFFSET 5", sql
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub EmbeddedExpressionsTest()
+		  dim sql as string
+		  
+		  sql = SQLBuilder_MTC.SQLSelect( "" ) _
+		  .From( _
+		  _
+		  SQLBuilder_MTC.SQLSelect( "id" ) _
+		  .From( "table" ) _
+		  .Where( "i", 1 ), "table_alias" _
+		  _
+		  ).Where( "j", 2 ) _
+		  .ToString( SQLBuilder_MTC.PHTypes.DollarSignNumber )
+		  
+		  sql = SqueezeWhitespace( sql )
+		  Assert.AreEqual "SELECT * FROM ( SELECT id FROM table WHERE i = $1 ) AS table_alias WHERE j = $2", sql
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub FromClauseTest()
 		  dim sql as string 
 		  
@@ -28,6 +58,18 @@ Inherits TestGroup
 		  Assert.AreEqual "SELECT * FROM ( SELECT * FROM table ) AS tab", sql
 		  
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function GetSQLiteDatabase() As SQLiteDatabase
+		  dim db as new SQLiteDatabase
+		  db.DatabaseName = "SQLBuilder_MTC_Tests"
+		  if not db.Connect then
+		    raise new RuntimeException
+		  end if
+		  
+		  return db
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -187,6 +229,63 @@ Inherits TestGroup
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub GroupByClauseTest()
+		  dim sql as string 
+		  
+		  sql = SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).GroupBy( "id", "name" ).ToString
+		  sql = SqueezeWhitespace( sql )
+		  Assert.AreEqual "SELECT * FROM table GROUP BY id, name", sql
+		  
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub OrderByClauseTest()
+		  dim sql as string 
+		  
+		  sql = SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).OrderBy( "id" ).ToString
+		  sql = SqueezeWhitespace( sql )
+		  Assert.AreEqual "SELECT * FROM table ORDER BY id", sql
+		  
+		  sql = SQLBuilder_MTC.SQLSelect( "a, b, c" ).From( "table" ).OrderBy( 3, 1, 2 ).ToString
+		  sql = SqueezeWhitespace( sql )
+		  Assert.AreEqual "SELECT a, b, c FROM table ORDER BY 3, 1, 2", sql
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub PrepareTest()
+		  self.StopTestOnFail = true
+		  
+		  dim db as Database = GetSQLiteDatabase
+		  Assert.IsTrue db.Connect, "Can't connect to database"
+		  
+		  dim sql as string = _
+		  "CREATE TABLE tester (id INTEGER PRIMARY KEY NOT NULL UNIQUE, name TEXT);"
+		  db.SQLExecute sql
+		  Assert.IsFalse db.Error, "Couldn't create table: " + db.ErrorMessage.ToText 
+		  
+		  //
+		  // Note: Once SQLBuilder_MTC supports inserts, this should be replaced
+		  //
+		  sql = "INSERT INTO tester (name) VALUES ('John'), ('Joe'), ('Larry');"
+		  db.SQLExecute sql
+		  Assert.IsFalse db.Error, "Couldn't insert values: " + db.ErrorMessage.ToText
+		  
+		  dim ps as PreparedSQLStatement = _
+		  SQLBuilder_MTC.SQLSelect( "*" ).From( "tester" ).Where( "name", "LIKE", "J%" ).Prepare( db )
+		  
+		  dim rs as RecordSet = ps.SQLSelect
+		  Assert.IsFalse db.Error, "Couldn't query with prepared statement: " + db.ErrorMessage.ToText
+		  
+		  Assert.AreEqual 2, rs.RecordCount, "All records where not found"
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub ReplaceHoldersTest()
 		  dim sb as new SQLBuilder_MTC.Statement
 		  dim ut as SQLBuilder_MTC.UnitTestInterface = sb
@@ -275,6 +374,16 @@ Inherits TestGroup
 		  sql = SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).Where( "i", 3 ).Where( "j", true ).OrWhereBetween( "y", 0, 4 ).ToString
 		  sql = SqueezeWhitespace( sql )
 		  Assert.AreEqual "SELECT * FROM table WHERE i = ? AND j = ? OR y BETWEEN ? AND ?", sql
+		  
+		  sql = SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).Where( "i", 3 ).Where( _
+		  SQLBuilder_MTC.Where( "j", true ).OrWhereBetween( "y", 0, 4 ) _
+		  ).ToString
+		  sql = SqueezeWhitespace( sql )
+		  Assert.AreEqual "SELECT * FROM table WHERE i = ? AND ( j = ? OR y BETWEEN ? AND ? )", sql
+		  
+		  sql = SQLBuilder_MTC.WhereNotNull( "i" ).ToString
+		  sql = SqueezeWhitespace( sql )
+		  Assert.AreEqual "i IS NOT NULL", sql
 		End Sub
 	#tag EndMethod
 

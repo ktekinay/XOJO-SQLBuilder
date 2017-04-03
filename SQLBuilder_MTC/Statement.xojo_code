@@ -114,9 +114,12 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		    
 		    if f.Expression isa SQLBuilder_MTC.Statement then
 		      dim sb as SQLBuilder_MTC.Statement = f.Expression
-		      AppendLineToStringBuilder stringBuilder, indent, "("
+		      stringBuilder.Append "("
+		      stringBuilder.Append EndOfLine
 		      sb.BuildSQL indent + kIndentString, stringBuilder, values
-		      AppendLineToStringBuilder stringBuilder, indent, ") AS", f.AsAlias
+		      stringBuilder.Append indent
+		      stringBuilder.Append ") AS "
+		      stringBuilder.Append f.AsAlias
 		      
 		    elseif f.Expression.Type = Variant.TypeString then
 		      stringBuilder.Append f.Expression.StringValue
@@ -136,6 +139,34 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		  next i
 		  
 		  stringBuilder.Append EndOfLine
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub BuildGroupByClause(indent As String, stringBuilder() As String)
+		  if GroupBys.Ubound = -1 then
+		    return
+		  end if
+		  
+		  for i as integer = 0 to GroupBys.Ubound
+		    AppendLineToStringBuilder stringBuilder, indent, GroupBys( i ) + if( i < GroupBys.Ubound, ",", "" )
+		  next
+		  
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub BuildOrderByClause(indent As String, stringBuilder() As String)
+		  if OrderBys.Ubound = -1 then
+		    return
+		  end if
+		  
+		  for i as integer = 0 to OrderBys.Ubound
+		    AppendLineToStringBuilder stringBuilder, indent, orderBys( i ) + if( i < orderBys.Ubound, ",", "" )
+		  next
+		  
+		  
 		End Sub
 	#tag EndMethod
 
@@ -193,13 +224,41 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		    //
 		    // See if we have to prefix WHERE as this might only be a where statement
 		    //
-		    if stringBuilder.Ubound <> -1 then
+		    if OperationType <> "" then
 		      AppendLineToStringBuilder stringBuilder, indent, "WHERE"
 		      BuildWhereClause nextIndent, stringBuilder, values
 		    else
 		      BuildWhereClause indent, stringBuilder, values
 		    end if
 		  end if
+		  
+		  //
+		  // Group By
+		  //
+		  if GroupBys.Ubound <> -1 then
+		    AppendLineToStringBuilder stringBuilder, indent, "GROUP BY"
+		    BuildGroupByClause nextIndent, stringBuilder
+		  end if
+		  
+		  //
+		  // Order By
+		  //
+		  if OrderBys.Ubound <> -1 then
+		    AppendLineToStringBuilder stringBuilder, indent, "ORDER BY"
+		    BuildOrderByClause nextIndent, stringBuilder
+		  end if
+		  
+		  //
+		  // Additional
+		  //
+		  if LimitParams.Limit > 0 then
+		    AppendLineToStringBuilder stringBuilder, indent, "LIMIT", str( LimitParams.Limit )
+		  end if
+		  
+		  if LimitParams.Offset > 0 then
+		    AppendLineToStringBuilder stringBuilder, indent, "OFFSET", str( LimitParams.OFFSET )
+		  end if
+		  
 		End Sub
 	#tag EndMethod
 
@@ -224,17 +283,31 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		      stringBuilder.Append "NOT "
 		    end if
 		    
-		    stringBuilder.Append w.Expression
+		    if w.Expression.Type = Variant.TypeString then
+		      stringBuilder.Append w.Expression
+		    end if
 		    
-		    if w.Values.Ubound = 0 and w.Values( 0 ) isa SQLBuilder_MTC.Statement then
-		      dim subQuery as SQLBuilder_MTC.Statement = w.Values( 0 )
-		      stringBuilder.Append " ("
+		    dim subQuery as SQLBuilder_MTC.Statement
+		    if w.Expression isa SQLBuilder_MTC.Statement then
+		      subQuery = w.Expression
+		      //
+		      // There won't be values
+		      //
+		    elseif w.Values.Ubound = 0 and w.Values( 0 ) isa SQLBuilder_MTC.Statement then
+		      subQuery = w.Values( 0 )
+		      //
+		      // Still won't be values
+		      //
+		    end if
+		    
+		    if subQuery is nil then
+		      stringBuilder.Append EndOfLine
+		      AppendToVariantArray values, w.Values
+		    else
+		      stringBuilder.Append "("
 		      stringBuilder.Append EndOfLine
 		      subQuery.BuildSQL nextIndent, stringBuilder, values
 		      AppendLineToStringBuilder stringBuilder, indent, ")"
-		    else
-		      stringBuilder.Append EndOfLine
-		      AppendToVariantArray values, w.Values
 		    end if
 		    
 		  next i
@@ -730,6 +803,10 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 
 	#tag Method, Flags = &h0
 		Function Having(ParamArray conditions() As String) As SQLBuilder_MTC.AdditionalClause
+		  #pragma warning "Finish this!"
+		  
+		  
+		  
 		  AppendToArray Havings, conditions
 		  
 		  return self
@@ -771,14 +848,14 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 
 	#tag Method, Flags = &h0
 		Function Limit(limit As Integer) As SQLBuilder_MTC.AdditionalClause
-		  SQLLimit.Limit = limit
+		  LimitParams.Limit = limit
 		  return self
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function Offset(offset As Integer) As SQLBuilder_MTC.AdditionalClause
-		  SQLLimit.Offset = offset
+		  LimitParams.Offset = offset
 		  return self
 		End Function
 	#tag EndMethod
@@ -1314,12 +1391,30 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		Private Havings() As String
 	#tag EndProperty
 
+	#tag ComputedProperty, Flags = &h21
+		#tag Getter
+			Get
+			  if mLimitParams is nil then
+			    mLimitParams = new LimitParams
+			  end if
+			  
+			  return mLimitParams
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  mLimitParams = value
+			End Set
+		#tag EndSetter
+		Private LimitParams As SQLBuilder_MTC.LimitParams
+	#tag EndComputedProperty
+
 	#tag Property, Flags = &h21
-		Attributes( hidden ) Private mOperationType As String
+		Attributes( hidden ) Private mLimitParams As SQLBuilder_MTC.LimitParams
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
-		Attributes( hidden ) Private mSQLLimit As LimitParams
+		Attributes( hidden ) Private mOperationType As String
 	#tag EndProperty
 
 	#tag ComputedProperty, Flags = &h21
@@ -1356,24 +1451,6 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag Property, Flags = &h21
 		Private SelectParams() As SQLBuilder_MTC.SelectParams
 	#tag EndProperty
-
-	#tag ComputedProperty, Flags = &h21
-		#tag Getter
-			Get
-			  if mSQLLimit is nil then
-			    mSQLLimit = new LimitParams
-			  end if
-			  
-			  return mSQLLimit
-			End Get
-		#tag EndGetter
-		#tag Setter
-			Set
-			  mSQLLimit = value
-			End Set
-		#tag EndSetter
-		Private SQLLimit As LimitParams
-	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter

@@ -182,6 +182,36 @@ Implements StatementInterface
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function GroupBy(ParamArray columns() As String) As SQLBuilder_MTC.AdditionalClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Limit(limit As Integer) As SQLBuilder_MTC.AdditionalClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Offset(offset As Integer) As SQLBuilder_MTC.AdditionalClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OrderBy(ParamArray columnIndexes() As Integer) As SQLBuilder_MTC.AdditionalClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OrderBy(ParamArray expression() As String) As SQLBuilder_MTC.AdditionalClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function OrWhere(statement As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
@@ -261,6 +291,12 @@ Implements StatementInterface
 
 	#tag Method, Flags = &h0
 		Function OrWhereRaw(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Prepare(db As Database) As PreparedSQLStatement
 		  
 		End Function
 	#tag EndMethod
