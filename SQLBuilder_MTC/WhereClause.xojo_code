@@ -1,6 +1,6 @@
 #tag Interface
 Private Interface WhereClause
-Implements  StatementInterface
+Implements StatementInterface
 	#tag Method, Flags = &h0
 		Function CondOrWhere(includeIf As Boolean, statement As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  
@@ -69,6 +69,18 @@ Implements  StatementInterface
 
 	#tag Method, Flags = &h0
 		Function CondOrWhereNotIn(includeIf As Boolean, expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondOrWhereNotNull(includeIf As Boolean, expression As String) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondOrWhereNull(includeIf As Boolean, expression As String) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
@@ -231,6 +243,18 @@ Implements  StatementInterface
 
 	#tag Method, Flags = &h0
 		Function OrWhereNotIn(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OrWhereNotNull(expression As String) As SQLBuilder_MTC.WhereClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OrWhereNull(expression As String) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod

@@ -1,6 +1,6 @@
 #tag Class
 Protected Class Statement
-Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterface,WithClause, StatementInterface
+Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterface,WithClause,StatementInterface
 	#tag Method, Flags = &h21
 		Private Sub AppendFromParam(isLateral As Boolean, expression As Variant, asAlias As String, joinExpression As String, onCondition As String, values() As Variant)
 		  dim f as new SQLBuilder_MTC.FromParams
@@ -83,6 +83,10 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 
 	#tag Method, Flags = &h21
 		Private Sub BuildFromClause(indent As String, stringBuilder() As String, values() As Variant)
+		  if FromParams.Ubound = -1 then
+		    return
+		  end if
+		  
 		  for i as integer = 0 to FromParams.Ubound
 		    dim f as SQLBuilder_MTC.FromParams = FromParams( i )
 		    
@@ -113,6 +117,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		      AppendLineToStringBuilder stringBuilder, indent, "("
 		      sb.BuildSQL indent + kIndentString, stringBuilder, values
 		      AppendLineToStringBuilder stringBuilder, indent, ") AS", f.AsAlias
+		      
 		    elseif f.Expression.Type = Variant.TypeString then
 		      stringBuilder.Append f.Expression.StringValue
 		      if f.AsAlias <> "" then
@@ -130,7 +135,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		    AppendToVariantArray values, f.Values
 		  next i
 		  
-		  
+		  stringBuilder.Append EndOfLine
 		End Sub
 	#tag EndMethod
 
@@ -180,6 +185,59 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		    AppendLineToStringBuilder stringBuilder, indent, "FROM"
 		    BuildFromClause nextIndent, stringBuilder, values
 		  end if
+		  
+		  //
+		  // Where
+		  //
+		  if WhereParams.Ubound <> -1 then
+		    //
+		    // See if we have to prefix WHERE as this might only be a where statement
+		    //
+		    if stringBuilder.Ubound <> -1 then
+		      AppendLineToStringBuilder stringBuilder, indent, "WHERE"
+		      BuildWhereClause nextIndent, stringBuilder, values
+		    else
+		      BuildWhereClause indent, stringBuilder, values
+		    end if
+		  end if
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub BuildWhereClause(indent As String, stringBuilder() As String, values() As Variant)
+		  dim nextIndent as string = indent + kIndentString
+		  
+		  for i as integer = 0 to WhereParams.Ubound
+		    dim w as SQLBuilder_MTC.WhereParams = WhereParams( i )
+		    
+		    stringBuilder.Append indent
+		    
+		    if i > 0 then
+		      if w.IsOR then
+		        stringBuilder.Append "OR "
+		      else
+		        stringBuilder.Append "AND "
+		      end if
+		    end if
+		    
+		    if w.IsNOT then
+		      stringBuilder.Append "NOT "
+		    end if
+		    
+		    stringBuilder.Append w.Expression
+		    
+		    if w.Values.Ubound = 0 and w.Values( 0 ) isa SQLBuilder_MTC.Statement then
+		      dim subQuery as SQLBuilder_MTC.Statement = w.Values( 0 )
+		      stringBuilder.Append " ("
+		      stringBuilder.Append EndOfLine
+		      subQuery.BuildSQL nextIndent, stringBuilder, values
+		      AppendLineToStringBuilder stringBuilder, indent, ")"
+		    else
+		      stringBuilder.Append EndOfLine
+		      AppendToVariantArray values, w.Values
+		    end if
+		    
+		  next i
 		  
 		End Sub
 	#tag EndMethod
@@ -328,6 +386,28 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function CondOrWhereNotNull(includeIf As Boolean, expression As String) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return OrWhereNotNull( expression )
+		  else
+		    return self
+		  end if
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondOrWhereNull(includeIf As Boolean, expression As String) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return OrWhereNull( expression )
+		  else
+		    return self
+		  end if
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function CondOrWhereRaw(includeIf As Boolean, expression As String, ParamArray values() As String) As SQLBuilder_MTC.WhereClause
 		  if includeIf then
 		    return OrWhereRaw( expression, values )
@@ -463,14 +543,22 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 
 	#tag Method, Flags = &h0
 		Function CondWhereNotNull(includeIf As Boolean, expression As String) As SQLBuilder_MTC.WhereClause
-		  return CondWhere( includeIf, expression, "<>", nil )
+		  if includeIf then
+		    return WhereNotNull( expression )
+		  else
+		    return self
+		  end if
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function CondWhereNull(includeIf As Boolean, expression As String) As SQLBuilder_MTC.WhereClause
-		  return CondWhere( includeIf, expression, "=", nil )
+		  if includeIf then
+		    return WhereNull( expression )
+		  else
+		    return self
+		  end if
 		  
 		End Function
 	#tag EndMethod
@@ -753,7 +841,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		  values.Append lowValue
 		  values.Append highValue
 		  
-		  AppendWhereParam expression + " BETWEEN ? AND ?", values, true, false
+		  AppendWhereParam expression + " BETWEEN ? AND ?", values, false, true
 		  return self
 		End Function
 	#tag EndMethod
@@ -817,6 +905,20 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		Function OrWhereNotIn(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
 		  dim placeholders() as string = ValuesToPlaceholders( values )
 		  AppendWhereParam expression + " NOT IN (" + join( placeholders, "," ) + ")", values, false, true
+		  return self
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OrWhereNotNull(expression As String) As SQLBuilder_MTC.WhereClause
+		  AppendWhereParam expression + " IS NOT NULL", nil, false, true
+		  return self
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OrWhereNull(expression As String) As SQLBuilder_MTC.WhereClause
+		  AppendWhereParam expression + " IS NULL", nil, false, true
 		  return self
 		End Function
 	#tag EndMethod
@@ -1085,7 +1187,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		      comparison = "<>"
 		    end select
 		    
-		    return WhereRaw( expression + comparison + kSQLPlaceholder, value )
+		    return WhereRaw( expression + " " + comparison + " " + kSQLPlaceholder, value )
 		    
 		  end if
 		  
@@ -1178,15 +1280,15 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 
 	#tag Method, Flags = &h0
 		Function WhereNotNull(expression As String) As SQLBuilder_MTC.WhereClause
-		  return Where( expression, "<>", nil )
-		  
+		  AppendWhereParam expression + " IS NOT NULL", nil, false, false
+		  return self
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function WhereNull(expression As String) As SQLBuilder_MTC.WhereClause
-		  return Where( expression, "=", nil )
-		  
+		  AppendWhereParam expression + " IS NULL", nil, false, false
+		  return self
 		End Function
 	#tag EndMethod
 
