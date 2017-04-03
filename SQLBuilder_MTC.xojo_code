@@ -1,7 +1,7 @@
 #tag Module
 Protected Module SQLBuilder_MTC
 	#tag Method, Flags = &h1
-		Protected Function CondWhere(includeIf As Boolean, statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Protected Function CondWhere(includeIf As Boolean, statement As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  dim s as new SQLBuilder_MTC.Statement
 		  return s.CondWhere( includeIf, statement )
 		End Function
@@ -29,14 +29,14 @@ Protected Module SQLBuilder_MTC
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function CondWhereExists(includeIf As Boolean, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Protected Function CondWhereExists(includeIf As Boolean, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  dim s as new SQLBuilder_MTC.Statement
 		  return s.CondWhereExists( includeIf, subQuery )
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function CondWhereIn(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Protected Function CondWhereIn(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  dim s as new SQLBuilder_MTC.Statement
 		  return s.CondWhereIn( includeIf, expression, subQuery )
 		End Function
@@ -50,7 +50,7 @@ Protected Module SQLBuilder_MTC
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function CondWhereNot(includeIf As Boolean, statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Protected Function CondWhereNot(includeIf As Boolean, statement As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  dim s as new SQLBuilder_MTC.Statement
 		  return s.CondWhereNot( includeIf, statement )
 		End Function
@@ -64,14 +64,14 @@ Protected Module SQLBuilder_MTC
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function CondWhereNotExists(includeIf As Boolean, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Protected Function CondWhereNotExists(includeIf As Boolean, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  dim s as new SQLBuilder_MTC.Statement
 		  return s.CondWhereNotExists( includeIf, subQuery )
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function CondWhereNotIn(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Protected Function CondWhereNotIn(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  dim s as new SQLBuilder_MTC.Statement
 		  return s.CondWhereNotIn( includeIf, expression, subQuery )
 		End Function
@@ -137,7 +137,7 @@ Protected Module SQLBuilder_MTC
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function SQLWith(alias As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WithClause
+		Protected Function SQLWith(alias As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WithClause
 		  dim s as new SQLBuilder_MTC.Statement
 		  return s.SQLWith( alias, subQuery )
 		  
@@ -145,7 +145,7 @@ Protected Module SQLBuilder_MTC
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function Where(statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Protected Function Where(statement As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  dim s as new SQLBuilder_MTC.Statement
 		  return s.Where( statement )
 		End Function
@@ -173,14 +173,14 @@ Protected Module SQLBuilder_MTC
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function WhereExists(statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Protected Function WhereExists(statement As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  dim s as new SQLBuilder_MTC.Statement
 		  return s.WhereExists( statement )
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function WhereIn(expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Protected Function WhereIn(expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  dim s as new SQLBuilder_MTC.Statement
 		  return s.WhereIn( expression, subQuery )
 		End Function
@@ -194,7 +194,7 @@ Protected Module SQLBuilder_MTC
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function WhereNot(statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Protected Function WhereNot(statement As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  dim s as new SQLBuilder_MTC.Statement
 		  return s.WhereNot( statement )
 		End Function
@@ -208,14 +208,14 @@ Protected Module SQLBuilder_MTC
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function WhereNotExists(statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Protected Function WhereNotExists(statement As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  dim s as new SQLBuilder_MTC.Statement
 		  return s.WhereNotExists( statement )
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function WhereNotIn(expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Protected Function WhereNotIn(expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  dim s as new SQLBuilder_MTC.Statement
 		  return s.WhereNotIn( expression, subQuery )
 		End Function

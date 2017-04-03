@@ -1,5 +1,6 @@
 #tag Interface
 Private Interface WithClause
+Implements StatementInterface
 	#tag Method, Flags = &h0
 		Function SQLSelect(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.SelectClause
 		  
@@ -13,7 +14,7 @@ Private Interface WithClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function SQLWith(alias As String, subQuery As SQLBuilder_MTC.Statement) As WithClause
+		Function SQLWith(alias As String, subQuery As SQLBuilder_MTC.StatementInterface) As WithClause
 		  
 		End Function
 	#tag EndMethod

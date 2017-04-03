@@ -1,5 +1,6 @@
 #tag Interface
 Private Interface AdditionalClause
+Implements StatementInterface
 	#tag Method, Flags = &h0
 		Function Limit(offset As Integer) As SQLBuilder_MTC.AdditionalClause
 		  

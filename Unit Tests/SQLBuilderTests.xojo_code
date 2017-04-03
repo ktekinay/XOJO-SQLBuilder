@@ -2,6 +2,35 @@
 Protected Class SQLBuilderTests
 Inherits TestGroup
 	#tag Method, Flags = &h0
+		Sub FromClauseTest()
+		  dim sql as string 
+		  
+		  sql = SQLBuilder_MTC.SQLSelect( "*" ).From( "table" ).ToString
+		  sql = SqueezeWhitespace( sql )
+		  Assert.AreEqual "SELECT * FROM table", sql
+		  
+		  sql = SQLBuilder_MTC.SQLSelect( "*" ).From( "table" ).From( "table2" ).ToString
+		  sql = SqueezeWhitespace( sql )
+		  Assert.AreEqual "SELECT * FROM table, table2", sql
+		  
+		  sql = SQLBuilder_MTC.SQLSelect( "*" ).From( "table" ).LeftJoin( "table2", "table.id = table2.table_id" ).ToString
+		  sql = SqueezeWhitespace( sql )
+		  Assert.AreEqual "SELECT * FROM table LEFT JOIN table2 ON (table.id = table2.table_id)", sql
+		  
+		  sql = SQLBuilder_MTC.SQLSelect( "*" ).From( "table" ).LeftJoin( "table2", "table.id = table2.table_id" ).From( "table3" ).ToString
+		  sql = SqueezeWhitespace( sql )
+		  Assert.AreEqual "SELECT * FROM table LEFT JOIN table2 ON (table.id = table2.table_id), table3", sql
+		  
+		  sql = SQLBuilder_MTC.SQLSelect( "*" ).From( _
+		  SQLBuilder_MTC.SQLSelect( "*" ).From( "table" ), "tab" _
+		  ).ToString
+		  sql = SqueezeWhitespace( sql )
+		  Assert.AreEqual "SELECT * FROM ( SELECT * FROM table ) AS tab", sql
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub GetTrueValueTest()
 		  self.StopTestOnFail = true
 		  

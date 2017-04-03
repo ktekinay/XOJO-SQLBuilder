@@ -1,7 +1,8 @@
 #tag Interface
 Private Interface SelectClause
+Implements StatementInterface
 	#tag Method, Flags = &h0
-		Function From(subQuery As SQLBuilder_MTC.Statement, asAlias As String, isLateral As Boolean = False) As SQLBuilder_MTC.FromClause
+		Function From(subQuery As SQLBuilder_MTC.StatementInterface, asAlias As String, isLateral As Boolean = False) As SQLBuilder_MTC.FromClause
 		  
 		End Function
 	#tag EndMethod

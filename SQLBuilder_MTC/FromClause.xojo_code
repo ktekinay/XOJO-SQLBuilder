@@ -1,7 +1,8 @@
 #tag Interface
 Private Interface FromClause
+Implements StatementInterface
 	#tag Method, Flags = &h0
-		Function CondWhere(includeIf As Boolean, stement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Function CondWhere(includeIf As Boolean, stement As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
@@ -25,13 +26,13 @@ Private Interface FromClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondWhereExists(includeIf As Boolean, statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Function CondWhereExists(includeIf As Boolean, statement As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondWhereIn(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Function CondWhereIn(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
@@ -43,7 +44,7 @@ Private Interface FromClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondWhereNot(includeIf As Boolean, statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Function CondWhereNot(includeIf As Boolean, statement As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
@@ -55,13 +56,13 @@ Private Interface FromClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondWhereNotExists(includeIf As Boolean, statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Function CondWhereNotExists(includeIf As Boolean, statement As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondWhereNotIn(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Function CondWhereNotIn(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
@@ -97,7 +98,7 @@ Private Interface FromClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function From(subQuery As SQLBuilder_MTC.Statement, asAlias As String, isLateral As Boolean = False) As SQLBuilder_MTC.FromClause
+		Function From(subQuery As SQLBuilder_MTC.StatementInterface, asAlias As String, isLateral As Boolean = False) As SQLBuilder_MTC.FromClause
 		  
 		End Function
 	#tag EndMethod
@@ -163,7 +164,7 @@ Private Interface FromClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Where(statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Function Where(statement As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
@@ -187,13 +188,13 @@ Private Interface FromClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereExists(statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Function WhereExists(statement As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereIn(expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Function WhereIn(expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
@@ -205,7 +206,7 @@ Private Interface FromClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereNot(statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Function WhereNot(statement As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
@@ -217,13 +218,13 @@ Private Interface FromClause
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereNotExists(statement As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Function WhereNotExists(statement As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereNotIn(expression As String, subQuery As SQLBuilder_MTC.Statement) As SQLBuilder_MTC.WhereClause
+		Function WhereNotIn(expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  
 		End Function
 	#tag EndMethod
