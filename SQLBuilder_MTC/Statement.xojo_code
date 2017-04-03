@@ -18,6 +18,15 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
+		Private Sub AppendHavingParam(expression As Variant, values() As Variant)
+		  dim h as new SQLBuilder_MTC.HavingParams
+		  h.Expression = expression
+		  AppendToVariantArray h.Values, GetTrueValues( values )
+		  Havings.Append h
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
 		Private Sub AppendLineToStringBuilder(stringBuilder() As String, indent As String, ParamArray items() As String)
 		  stringBuilder.Append indent
 		  for i as integer = 0 to items.Ubound
@@ -158,20 +167,35 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 
 	#tag Method, Flags = &h21
 		Private Sub BuildHavingClause(indent As String, stringBuilder() As String, values() As Variant)
-		  if Havings.Expression.IsNull then
+		  if Havings.Ubound = -1 then
 		    return
 		  end if
 		  
-		  if Havings.Expression.Type = Variant.TypeString then
-		    AppendLineToStringBuilder stringBuilder, indent, Havings.Expression.StringValue
-		    AppendToVariantArray values, Havings.Values
-		  elseif Havings.Expression isa SQLBuilder_MTC.Statement then
-		    dim subQuery as SQLBuilder_MTC.Statement = Havings.Expression
-		    AppendLineToStringBuilder stringBuilder, indent, "("
-		    subQuery.BuildSQL indent + kIndentString, stringBuilder, values
-		    AppendLineToStringBuilder stringBuilder, indent, ")"
-		  end if
+		  for i as integer = 0 to Havings.Ubound
+		    if i > 0 then
+		      StringBuilder.Append ","
+		      StringBuilder.Append EndOfLine
+		    end if
+		    
+		    dim h as SQLBuilder_MTC.HavingParams = Havings( i )
+		    
+		    if h.Expression.Type = Variant.TypeString then
+		      stringBuilder.Append indent
+		      stringBuilder.Append h.Expression.StringValue
+		      AppendToVariantArray values, h.Values
+		    elseif h.Expression isa SQLBuilder_MTC.Statement then
+		      dim subQuery as SQLBuilder_MTC.Statement = h.Expression
+		      AppendLineToStringBuilder stringBuilder, indent, "("
+		      subQuery.BuildSQL indent + kIndentString, stringBuilder, values
+		      stringBuilder.Append indent
+		      stringBuilder.Append ")"
+		      //
+		      // No values
+		      //
+		    end if
+		  next
 		  
+		  StringBuilder.Append EndOfLine
 		End Sub
 	#tag EndMethod
 
@@ -262,7 +286,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		  //
 		  // Having
 		  //
-		  if Havings.Expression.IsNull = false then
+		  if Havings.Ubound <> -1 then
 		    AppendLineToStringBuilder stringBuilder, indent, "HAVING"
 		    BuildHavingClause nextIndent, stringBuilder, values
 		  end if
@@ -830,8 +854,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 
 	#tag Method, Flags = &h0
 		Function Having(subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.AdditionalClause
-		  Havings.Expression = subQuery
-		  redim Havings.Values( -1 )
+		  AppendHavingParam subQuery, nil
 		  return self
 		  
 		End Function
@@ -839,8 +862,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 
 	#tag Method, Flags = &h0
 		Function Having(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.AdditionalClause
-		  Havings.Expression = expression
-		  AppendToVariantArray Havings.Values, GetTrueValues( values )
+		  AppendHavingParam expression, values
 		  
 		  return self
 		  
@@ -1420,23 +1442,9 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		Private GroupBys() As String
 	#tag EndProperty
 
-	#tag ComputedProperty, Flags = &h21
-		#tag Getter
-			Get
-			  if mHavings is nil then
-			    mHavings = new SQLBuilder_MTC.HavingParams
-			  end if
-			  
-			  return mHavings
-			End Get
-		#tag EndGetter
-		#tag Setter
-			Set
-			  mHavings = value
-			End Set
-		#tag EndSetter
-		Private Havings As SQLBuilder_MTC.HavingParams
-	#tag EndComputedProperty
+	#tag Property, Flags = &h21
+		Private Havings() As SQLBuilder_MTC.HavingParams
+	#tag EndProperty
 
 	#tag ComputedProperty, Flags = &h21
 		#tag Getter
@@ -1455,10 +1463,6 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		#tag EndSetter
 		Private LimitParams As SQLBuilder_MTC.LimitParams
 	#tag EndComputedProperty
-
-	#tag Property, Flags = &h21
-		Attributes( hidden ) Private mHavings As SQLBuilder_MTC.HavingParams
-	#tag EndProperty
 
 	#tag Property, Flags = &h21
 		Attributes( hidden ) Private mLimitParams As SQLBuilder_MTC.LimitParams

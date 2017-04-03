@@ -254,6 +254,18 @@ Inherits TestGroup
 		  sql = SqueezeWhitespace( sql )
 		  Assert.AreEqual "SELECT * FROM table GROUP BY name HAVING ( i = ? )", sql
 		  
+		  sql = SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).GroupBy( "a, b, c" ).Having( "i = ?" , 3 ).Having( "j = ?", "jack" ).ToString
+		  sql = SqueezeWhitespace( sql )
+		  Assert.AreEqual "SELECT * FROM table GROUP BY a, b, c HAVING i = ?, j = ?", sql
+		  
+		  sql = SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).GroupBy( "name" ).Having( _
+		  SQLBuilder_MTC.Where( "i", 3 ) _
+		  ).Having( _
+		  SQLBuilder_MTC.Where( "j", true ) _
+		  ).ToString
+		  sql = SqueezeWhitespace( sql )
+		  Assert.AreEqual "SELECT * FROM table GROUP BY name HAVING ( i = ? ), ( j = ? )", sql
+		  
 		End Sub
 	#tag EndMethod
 
