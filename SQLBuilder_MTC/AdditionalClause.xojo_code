@@ -2,6 +2,18 @@
 Private Interface AdditionalClause
 Implements StatementInterface
 	#tag Method, Flags = &h0
+		Function Having(subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.AdditionalClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Having(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.AdditionalClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function Limit(offset As Integer) As SQLBuilder_MTC.AdditionalClause
 		  
 		End Function

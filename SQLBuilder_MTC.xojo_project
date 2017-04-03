@@ -38,6 +38,7 @@ Class=FromParams;SQLBuilder_MTC/FromParams.xojo_code;&h4D7ACFFF;&h73CF87FF;false
 Interface=WithClause;SQLBuilder_MTC/WithClause.xojo_code;&h762DCFFF;&h73CF87FF;false
 Class=WithParams;SQLBuilder_MTC/WithParams.xojo_code;&h7D067FFF;&h73CF87FF;false
 Interface=StatementInterface;SQLBuilder_MTC/StatementInterface.xojo_code;&h7BE677FF;&h73CF87FF;false
+Class=HavingParams;SQLBuilder_MTC/HavingParams.xojo_code;&h4FA27FF;&h73CF87FF;false
 DefaultWindow=XojoUnitTestWindow
 AppMenuBar=MenuBar1
 MajorVersion=1

@@ -241,6 +241,23 @@ Inherits TestGroup
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub HavingClauseTest()
+		  dim sql as string
+		  
+		  sql = SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).GroupBy( "name" ).Having( "i = ?", 3 ).ToString
+		  sql = SqueezeWhitespace( sql )
+		  Assert.AreEqual "SELECT * FROM table GROUP BY name HAVING i = ?", sql
+		  
+		  sql = SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).GroupBy( "name" ).Having( _
+		  SQLBuilder_MTC.Where( "i", 3 ) _
+		  ).ToString
+		  sql = SqueezeWhitespace( sql )
+		  Assert.AreEqual "SELECT * FROM table GROUP BY name HAVING ( i = ? )", sql
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub OrderByClauseTest()
 		  dim sql as string 
 		  
