@@ -12,6 +12,209 @@ Inherits TestGroup
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h21
+		Private Sub AssertEqualness(expecteds() As String, actuals() As String)
+		  for i as integer = 0 to actuals.Ubound
+		    dim expected as string = expecteds( i )
+		    dim actual as string = actuals( i )
+		    actual = SqueezeWhitespace( actual )
+		    Assert.AreEqual expected, actual
+		  next
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub CondOrWhereTest()
+		  dim actuals() as string
+		  dim expecteds() as string
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhere( true, "i", 2 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true OR i = ?"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhereBetween( true, "i", 2, 3 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true OR i BETWEEN ? AND ?"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhereExists( true, _
+		  SQLBuilder_MTC.SQLSelect( "*" ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true OR EXISTS ( SELECT * )"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhereIn( true, "i", 1, 2, 3 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true OR i IN (?,?,?)"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhereNot( true, _
+		  SQLBuilder_MTC.Where( "i", 2 ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true OR NOT ( i = ? )"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhereNotBetween( true, "i", 2, 3 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true OR i NOT BETWEEN ? AND ?"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhereNotExists( true, _
+		  SQLBuilder_MTC.SQLSelect( "*" ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true OR NOT EXISTS ( SELECT * )"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhereNotIn( true, "i", 1, 2, 3 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true OR i NOT IN (?,?,?)"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhereNull( true, "i" ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true OR i IS NULL"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhereNotNull( true, "i" ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true OR i IS NOT NULL"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhereRaw( true, "i = ?" ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true OR i = ?"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhere( false, "i", 2 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhereBetween( false, "i", 2, 3 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhereExists( false, _
+		  SQLBuilder_MTC.SQLSelect( "*" ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhereIn( false, "i", 1, 2, 3 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhereNot( false, _
+		  SQLBuilder_MTC.Where( "i", 2 ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhereNotBetween( false, "i", 2, 3 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhereNotExists( false, _
+		  SQLBuilder_MTC.SQLSelect( "*" ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhereNotIn( false, "i", 1, 2, 3 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhereNull( false, "i" ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhereNotNull( false, "i" ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhereRaw( false, "i = ?" ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).Where( "i", 1 ).CondWhere( false, "a", 2 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE i = ?"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhere( false, "i", 1 ).Where( "a", 2 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true AND a = ?"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).FROM( "table" ).WhereRaw( "true" ).CondOrWhere( false, "i", 2 ).CondOrWhere( true, "a", 3 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true OR a = ?"
+		  
+		  AssertEqualness expecteds, actuals
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub CondWhereTest()
+		  dim actuals() as string
+		  dim expecteds() as string
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhere( true, "i", 2 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE i = ?"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhereBetween( true, "i", 2, 3 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE i BETWEEN ? AND ?"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhereExists( true, _
+		  SQLBuilder_MTC.SQLSelect( "*" ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE EXISTS ( SELECT * )"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhereIn( true, "i", 1, 2, 3 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE i IN (?,?,?)"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhereNot( true, _
+		  SQLBuilder_MTC.Where( "i", 2 ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE NOT ( i = ? )"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhereNotBetween( true, "i", 2, 3 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE i NOT BETWEEN ? AND ?"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhereNotExists( true, _
+		  SQLBuilder_MTC.SQLSelect( "*" ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE NOT EXISTS ( SELECT * )"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhereNotIn( true, "i", 1, 2, 3 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE i NOT IN (?,?,?)"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhereNull( true, "i" ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE i IS NULL"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhereNotNull( true, "i" ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE i IS NOT NULL"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhereRaw( true, "i = ?" ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE i = ?"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhere( false, "i", 2 ).ToString
+		  expecteds.Append "SELECT * FROM table"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhereBetween( false, "i", 2, 3 ).ToString
+		  expecteds.Append "SELECT * FROM table"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhereExists( false, _
+		  SQLBuilder_MTC.SQLSelect( "*" ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhereIn( false, "i", 1, 2, 3 ).ToString
+		  expecteds.Append "SELECT * FROM table"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhereNot( false, _
+		  SQLBuilder_MTC.Where( "i", 2 ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhereNotBetween( false, "i", 2, 3 ).ToString
+		  expecteds.Append "SELECT * FROM table"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhereNotExists( false, _
+		  SQLBuilder_MTC.SQLSelect( "*" ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhereNotIn( false, "i", 1, 2, 3 ).ToString
+		  expecteds.Append "SELECT * FROM table"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhereNull( false, "i" ).ToString
+		  expecteds.Append "SELECT * FROM table"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhereNotNull( false, "i" ).ToString
+		  expecteds.Append "SELECT * FROM table"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhereRaw( false, "i = ?" ).ToString
+		  expecteds.Append "SELECT * FROM table"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).Where( "i", 1 ).CondWhere( false, "a", 2 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE i = ?"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhere( false, "i", 1 ).Where( "a", 2 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE a = ?"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhere( false, "i", 2 ).CondOrWhere( true, "a", 3 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE a = ?"
+		  
+		  AssertEqualness expecteds, actuals
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h0
 		Sub EmbeddedExpressionsTest()
 		  dim sql as string
@@ -33,30 +236,27 @@ Inherits TestGroup
 
 	#tag Method, Flags = &h0
 		Sub FromClauseTest()
-		  dim sql as string 
+		  dim actuals() as string
+		  dim expecteds() as string
 		  
-		  sql = SQLBuilder_MTC.SQLSelect( "*" ).From( "table" ).ToString
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "SELECT * FROM table", sql
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "*" ).From( "table" ).ToString
+		  expecteds.Append "SELECT * FROM table"
 		  
-		  sql = SQLBuilder_MTC.SQLSelect( "*" ).From( "table" ).From( "table2" ).ToString
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "SELECT * FROM table, table2", sql
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "*" ).From( "table" ).From( "table2" ).ToString
+		  expecteds.Append "SELECT * FROM table, table2"
 		  
-		  sql = SQLBuilder_MTC.SQLSelect( "*" ).From( "table" ).LeftJoin( "table2", "table.id = table2.table_id" ).ToString
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "SELECT * FROM table LEFT JOIN table2 ON (table.id = table2.table_id)", sql
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "*" ).From( "table" ).LeftJoin( "table2", "table.id = table2.table_id" ).ToString
+		  expecteds.Append "SELECT * FROM table LEFT JOIN table2 ON (table.id = table2.table_id)"
 		  
-		  sql = SQLBuilder_MTC.SQLSelect( "*" ).From( "table" ).LeftJoin( "table2", "table.id = table2.table_id" ).From( "table3" ).ToString
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "SELECT * FROM table LEFT JOIN table2 ON (table.id = table2.table_id), table3", sql
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "*" ).From( "table" ).LeftJoin( "table2", "table.id = table2.table_id" ).From( "table3" ).ToString
+		  expecteds.Append "SELECT * FROM table LEFT JOIN table2 ON (table.id = table2.table_id), table3"
 		  
-		  sql = SQLBuilder_MTC.SQLSelect( "*" ).From( _
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "*" ).From( _
 		  SQLBuilder_MTC.SQLSelect( "*" ).From( "table" ), "tab" _
 		  ).ToString
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "SELECT * FROM ( SELECT * FROM table ) AS tab", sql
+		  expecteds.Append "SELECT * FROM ( SELECT * FROM table ) AS tab"
 		  
+		  AssertEqualness expecteds, actuals
 		End Sub
 	#tag EndMethod
 
@@ -242,45 +442,158 @@ Inherits TestGroup
 
 	#tag Method, Flags = &h0
 		Sub HavingClauseTest()
-		  dim sql as string
+		  dim actuals() as string
+		  dim expecteds() as string
 		  
-		  sql = SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).GroupBy( "name" ).Having( "i = ?", 3 ).ToString
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "SELECT * FROM table GROUP BY name HAVING i = ?", sql
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).GroupBy( "name" ).Having( "i = ?", 3 ).ToString
+		  expecteds.Append "SELECT * FROM table GROUP BY name HAVING i = ?"
 		  
-		  sql = SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).GroupBy( "name" ).Having( _
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).GroupBy( "name" ).Having( _
 		  SQLBuilder_MTC.Where( "i", 3 ) _
 		  ).ToString
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "SELECT * FROM table GROUP BY name HAVING ( i = ? )", sql
+		  expecteds.Append "SELECT * FROM table GROUP BY name HAVING ( i = ? )"
 		  
-		  sql = SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).GroupBy( "a, b, c" ).Having( "i = ?" , 3 ).Having( "j = ?", "jack" ).ToString
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "SELECT * FROM table GROUP BY a, b, c HAVING i = ?, j = ?", sql
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).GroupBy( "a, b, c" ).Having( "i = ?" , 3 ).Having( "j = ?", "jack" ).ToString
+		  expecteds.Append "SELECT * FROM table GROUP BY a, b, c HAVING i = ?, j = ?"
 		  
-		  sql = SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).GroupBy( "name" ).Having( _
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).GroupBy( "name" ).Having( _
 		  SQLBuilder_MTC.Where( "i", 3 ) _
 		  ).Having( _
 		  SQLBuilder_MTC.Where( "j", true ) _
 		  ).ToString
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "SELECT * FROM table GROUP BY name HAVING ( i = ? ), ( j = ? )", sql
+		  expecteds.Append "SELECT * FROM table GROUP BY name HAVING ( i = ? ), ( j = ? )"
 		  
+		  AssertEqualness expecteds, actuals
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub NextStatementTest()
+		  dim actuals() as string
+		  dim expecteds() as string
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).Union( _
+		  SQLBuilder_MTC.SQLSelect( "" ).From( "table2" ) _
+		  ).ToString
+		  expecteds.Append "( SELECT * FROM table ) UNION ( SELECT * FROM table2 )"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).Except( _
+		  SQLBuilder_MTC.SQLSelect( "" ).From( "table2" ) _
+		  ).ToString
+		  expecteds.Append "( SELECT * FROM table ) EXCEPT ( SELECT * FROM table2 )"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).Intersect( _
+		  SQLBuilder_MTC.SQLSelect( "" ).From( "table2" ) _
+		  ).ToString
+		  expecteds.Append "( SELECT * FROM table ) INTERSECT ( SELECT * FROM table2 )"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).Union( _
+		  SQLBuilder_MTC.SQLSelect( "" ).From( "table2" ), false _
+		  ).ToString
+		  expecteds.Append "( SELECT * FROM table ) UNION ALL ( SELECT * FROM table2 )"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).Except( _
+		  SQLBuilder_MTC.SQLSelect( "" ).From( "table2" ), false _
+		  ).ToString
+		  expecteds.Append "( SELECT * FROM table ) EXCEPT ALL ( SELECT * FROM table2 )"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).Intersect( _
+		  SQLBuilder_MTC.SQLSelect( "" ).From( "table2" ), false _
+		  ).ToString
+		  expecteds.Append "( SELECT * FROM table ) INTERSECT ALL ( SELECT * FROM table2 )"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "*" ).From( "table1" ).Where( "i", 2 ).Union( _
+		  SQLBuilder_MTC.SQLSelect( "*" ).From( "table2" ) _
+		  ).Intersect( _
+		  SQLBuilder_MTC.SQLSelect( "*" ).From( "table3" ) _
+		  ).Except( _
+		  SQLBuilder_MTC.SQLSelect( "*" ).From( "table4" ), false _
+		  ).ToString
+		  expecteds.Append "( SELECT * FROM table1 WHERE i = ? ) UNION ( SELECT * FROM table2 ) " + _
+		  "INTERSECT ( SELECT * FROM table3 ) EXCEPT ALL ( SELECT * FROM table4 )"
+		  
+		  AssertEqualness expecteds, actuals
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub OrderByClauseTest()
-		  dim sql as string 
+		  dim actuals() as string
+		  dim expecteds() as string
 		  
-		  sql = SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).OrderBy( "id" ).ToString
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "SELECT * FROM table ORDER BY id", sql
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).OrderBy( "id" ).ToString
+		  expecteds.Append "SELECT * FROM table ORDER BY id"
 		  
-		  sql = SQLBuilder_MTC.SQLSelect( "a, b, c" ).From( "table" ).OrderBy( 3, 1, 2 ).ToString
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "SELECT a, b, c FROM table ORDER BY 3, 1, 2", sql
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "a, b, c" ).From( "table" ).OrderBy( 3, 1, 2 ).ToString
+		  expecteds.Append "SELECT a, b, c FROM table ORDER BY 3, 1, 2"
 		  
+		  AssertEqualness expecteds, actuals
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub OrWhereClauseTest()
+		  dim actuals() as string
+		  dim expecteds() as string
+		  
+		  actuals.Append SQLBuilder_MTC.Where( "i", 1 ).OrWhere( "i", 1 ).ToString
+		  expecteds.Append "i = ? OR i = ?"
+		  
+		  actuals.Append SQLBuilder_MTC.Where( "i", nil ).OrWhere( "i", nil ).ToString
+		  expecteds.Append "i IS NULL OR i IS NULL"
+		  
+		  actuals.Append SQLBuilder_MTC.Where( "i", nil ).Where( "a", "<>", 3 ).OrWhere( "b", nil ).ToString
+		  expecteds.Append "i IS NULL AND a <> ? OR b IS NULL"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).Where( "i", 3 ).OrWhere( "j", true ).WhereBetween( "y", 0, 4 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE i = ? OR j = ? AND y BETWEEN ? AND ?"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).Where( "i", 3 ).OrWhere( _
+		  SQLBuilder_MTC.Where( "j", true ).OrWhereBetween( "y", 0, 4 ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE i = ? OR ( j = ? OR y BETWEEN ? AND ? )"
+		  
+		  actuals.Append SQLBuilder_MTC.WhereNotNull( "i" ).OrWhereNotNull( "i" ).ToString
+		  expecteds.Append "i IS NOT NULL OR i IS NOT NULL"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ) _
+		  .WhereIn( "arr",array( "a", "b", "c" ) ) _
+		  .OrWhereIn( "arr",array( "a", "b", "c" ) ) _
+		  .ToString
+		  expecteds.Append "SELECT * FROM table WHERE arr IN (?,?,?) OR arr IN (?,?,?)"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).WhereRaw( "true" ).OrWhereExists( _
+		  SQLBuilder_MTC.SQLSelect( "" ).From( "table2" ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true OR EXISTS ( SELECT * FROM table2 )"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).WhereRaw( "true" ).OrWhereNot( _
+		  SQLBuilder_MTC.SQLSelect( "" ).From( "table2" ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true OR NOT ( SELECT * FROM table2 )"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).WhereRaw( "true" ).OrWhereNotBetween( "j", 1, 2 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true OR j NOT BETWEEN ? AND ?"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).WhereRaw( "true" ).OrWhereNotExists( _
+		  SQLBuilder_MTC.SQLSelect( "" ).From( "table2" ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true OR NOT EXISTS ( SELECT * FROM table2 )"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).WhereRaw( "true" ) _
+		  .OrWhereNotIn( "arr",array( "a", "b", "c" ) ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true OR arr NOT IN (?,?,?)"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).WhereRaw( "true" ).OrWhereNull( "a" ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true OR a IS NULL"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).WhereRaw( "true" ).OrWhereNotNull( "a" ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true OR a IS NOT NULL"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).WhereRaw( "true" ).OrWhereRaw( "a = ? AND b <> ?", 1, 2 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE true OR a = ? AND b <> ?"
+		  
+		  AssertEqualness expecteds, actuals
 		End Sub
 	#tag EndMethod
 
@@ -330,27 +643,25 @@ Inherits TestGroup
 
 	#tag Method, Flags = &h0
 		Sub SelectClauseTest()
-		  dim sql as string 
+		  dim actuals() as string
+		  dim expecteds() as string
 		  
-		  sql = SQLBuilder_MTC.SQLSelect( "*" ).ToString
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "SELECT *", sql
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "*" ).ToString
+		  expecteds.Append "SELECT *"
 		  
-		  sql = SQLBuilder_MTC.SQLSelect( "a, b, c" ).ToString
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "SELECT a, b, c", sql
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "a, b, c" ).ToString
+		  expecteds.Append "SELECT a, b, c"
 		  
-		  sql = SQLBuilder_MTC.SQLSelect( "a, b" ).SQLSelect( "c" ).ToString
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "SELECT a, b, c", sql
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "a, b" ).SQLSelect( "c" ).ToString
+		  expecteds.Append "SELECT a, b, c"
 		  
-		  sql = SQLBuilder_MTC.SQLSelectDistinct( "a, b" ).SQLSelect( "c" ).ToString
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "SELECT DISTINCT a, b, c", sql
+		  actuals.Append SQLBuilder_MTC.SQLSelectDistinct( "a, b" ).SQLSelect( "c" ).ToString
+		  expecteds.Append "SELECT DISTINCT a, b, c"
 		  
-		  sql = SQLBuilder_MTC.SQLSelect( "a = ?", 1 ).ToString( SQLBuilder_MTC.PHTypes.DollarSignNumber )
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "SELECT a = $1", sql
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "a = ?", 1 ).ToString( SQLBuilder_MTC.PHTypes.DollarSignNumber )
+		  expecteds.Append "SELECT a = $1"
+		  
+		  AssertEqualness expecteds, actuals
 		End Sub
 	#tag EndMethod
 
@@ -386,33 +697,63 @@ Inherits TestGroup
 
 	#tag Method, Flags = &h0
 		Sub WhereClauseTest()
-		  dim sql as string 
+		  dim actuals() as string
+		  dim expecteds() as string
 		  
-		  sql = SQLBuilder_MTC.Where( "i", 1 ).ToString
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "i = ?", sql
+		  actuals.Append SQLBuilder_MTC.Where( "i", 1 ).ToString
+		  expecteds.Append "i = ?"
 		  
-		  sql = SQLBuilder_MTC.Where( "i", nil ).ToString
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "i IS NULL", sql
+		  actuals.Append SQLBuilder_MTC.Where( "i", nil ).ToString
+		  expecteds.Append "i IS NULL"
 		  
-		  sql = SQLBuilder_MTC.Where( "i", nil ).Where( "a", "<>", 3 ).OrWhere( "b", nil ).ToString
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "i IS NULL AND a <> ? OR b=?", sql
+		  actuals.Append SQLBuilder_MTC.Where( "i", nil ).Where( "a", "<>", 3 ).OrWhere( "b", nil ).ToString
+		  expecteds.Append "i IS NULL AND a <> ? OR b IS NULL"
 		  
-		  sql = SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).Where( "i", 3 ).Where( "j", true ).OrWhereBetween( "y", 0, 4 ).ToString
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "SELECT * FROM table WHERE i = ? AND j = ? OR y BETWEEN ? AND ?", sql
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).Where( "i", 3 ).Where( "j", true ).OrWhereBetween( "y", 0, 4 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE i = ? AND j = ? OR y BETWEEN ? AND ?"
 		  
-		  sql = SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).Where( "i", 3 ).Where( _
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).Where( "i", 3 ).Where( _
 		  SQLBuilder_MTC.Where( "j", true ).OrWhereBetween( "y", 0, 4 ) _
 		  ).ToString
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "SELECT * FROM table WHERE i = ? AND ( j = ? OR y BETWEEN ? AND ? )", sql
+		  expecteds.Append "SELECT * FROM table WHERE i = ? AND ( j = ? OR y BETWEEN ? AND ? )"
 		  
-		  sql = SQLBuilder_MTC.WhereNotNull( "i" ).ToString
-		  sql = SqueezeWhitespace( sql )
-		  Assert.AreEqual "i IS NOT NULL", sql
+		  actuals.Append SQLBuilder_MTC.WhereNotNull( "i" ).ToString
+		  expecteds.Append "i IS NOT NULL"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).WhereIn( "arr",array( "a", "b", "c" ) ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE arr IN (?,?,?)"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).WhereExists( _
+		  SQLBuilder_MTC.SQLSelect( "" ).From( "table2" ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE EXISTS ( SELECT * FROM table2 )"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).WhereNot( _
+		  SQLBuilder_MTC.SQLSelect( "" ).From( "table2" ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE NOT ( SELECT * FROM table2 )"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).WhereNotBetween( "j", 1, 2 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE j NOT BETWEEN ? AND ?"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).WhereNotExists( _
+		  SQLBuilder_MTC.SQLSelect( "" ).From( "table2" ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE NOT EXISTS ( SELECT * FROM table2 )"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).WhereNotIn( "arr",array( "a", "b", "c" ) ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE arr NOT IN (?,?,?)"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).WhereNull( "a" ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE a IS NULL"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).WhereNotNull( "a" ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE a IS NOT NULL"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).WhereRaw( "a = ? AND b <> ?", 1, 2 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE a = ? AND b <> ?"
+		  
+		  AssertEqualness expecteds, actuals
 		End Sub
 	#tag EndMethod
 

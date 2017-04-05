@@ -182,7 +182,19 @@ Implements StatementInterface
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function Except(nextStatement As SQLBuilder_MTC.StatementInterface, isDistinct As Boolean = True) As SQLBuilder_MTC.AdditionalClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function GroupBy(ParamArray columns() As String) As SQLBuilder_MTC.AdditionalClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Intersect(nextStatement As SQLBuilder_MTC.StatementInterface, isDistinct As Boolean = True) As SQLBuilder_MTC.AdditionalClause
 		  
 		End Function
 	#tag EndMethod
@@ -309,6 +321,12 @@ Implements StatementInterface
 
 	#tag Method, Flags = &h0
 		Function ToString(Optional phType As SQLBuilder_MTC.PHTypes) As String
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Union(nextStatement As SQLBuilder_MTC.StatementInterface, isDistinct As Boolean = True) As SQLBuilder_MTC.AdditionalClause
 		  
 		End Function
 	#tag EndMethod

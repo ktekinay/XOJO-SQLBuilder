@@ -41,6 +41,17 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
+		Private Sub AppendNextStatement(type As String, statement As SQLBuilder_MTC.StatementInterface, isDistinct As Boolean)
+		  dim ns as new SQLBuilder_MTC.NextStatementParams
+		  ns.Type = type
+		  ns.Statement = SQLBuilder_MTC.Statement( statement )
+		  ns.IsDistinct = isDistinct
+		  NextStatements.Append ns
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
 		Private Sub AppendSelectParam(expression As String, values() As Variant)
 		  expression = expression.Trim
 		  if expression = "" then
@@ -230,12 +241,21 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 
 	#tag Method, Flags = &h21
 		Private Sub BuildSQL(indent As String, stringBuilder() As String, values() As Variant)
-		  dim nextIndent as string = indent + kIndentString
-		  
 		  //
 		  // With
 		  //
 		  BuildWithClause indent, stringBuilder, values
+		  
+		  //
+		  // If there is a next statement, have to wrap this in parens
+		  //
+		  dim origIndent as string = indent
+		  if NextStatements.Ubound <> -1 then
+		    AppendLineToStringBuilder stringBuilder, indent, "("
+		    indent = indent + kIndentString
+		  end if
+		  
+		  dim nextIndent as string = indent + kIndentString
 		  
 		  select case OperationType
 		  case ""
@@ -310,6 +330,22 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		    AppendLineToStringBuilder stringBuilder, indent, "OFFSET", str( LimitParams.OFFSET )
 		  end if
 		  
+		  //
+		  // So the next statements if any
+		  //
+		  if nextStatements.Ubound <> -1 then
+		    indent = origIndent
+		    nextIndent = indent + kIndentString
+		    
+		    for i as integer = 0 to nextStatements.Ubound
+		      dim ns as SQLBuilder_MTC.NextStatementParams = NextStatements( i )
+		      
+		      AppendLineToStringBuilder stringBuilder, indent, ") " + ns.Type + _
+		      if( ns.IsDistinct, "", " ALL" ) + " ("
+		      ns.Statement.BuildSQL nextIndent, stringBuilder, values
+		    next i
+		    AppendLineToStringBuilder stringBuilder, indent, ")"
+		  end if
 		End Sub
 	#tag EndMethod
 
@@ -707,6 +743,13 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function Except(nextStatement As SQLBuilder_MTC.StatementInterface, isDistinct As Boolean = True) As SQLBuilder_MTC.AdditionalClause
+		  AppendNextStatement "EXCEPT", nextStatement, isDistinct
+		  return self
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function From(subQuery As SQLBuilder_MTC.StatementInterface, asAlias As String, isLateral As Boolean = False) As SQLBuilder_MTC.FromClause
 		  AppendFromParam isLateral, subQuery, asAlias, "", "", nil
 		  
@@ -878,6 +921,13 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function Intersect(nextStatement As SQLBuilder_MTC.StatementInterface, isDistinct As Boolean = True) As SQLBuilder_MTC.AdditionalClause
+		  AppendNextStatement "INTERSECT", nextStatement, isDistinct
+		  return self
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function Join(table As String, onCondition As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
 		  AppendFromParam false, table, "", "JOIN", onCondition, values
 		  return self
@@ -950,11 +1000,45 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 
 	#tag Method, Flags = &h0
 		Function OrWhere(expression As String, comparison As String, value As Variant) As SQLBuilder_MTC.WhereClause
-		  dim values() as variant
-		  values.Append value
+		  expression = expression.Trim
+		  comparison = comparison.Trim
 		  
-		  AppendWhereParam expression + comparison + kSQLPlaceholder, values, false, true
-		  return self
+		  if comparison = "" then
+		    comparison = "="
+		  end if
+		  
+		  if value.IsNull then
+		    
+		    select case comparison.Trim
+		    case "=", "IS"
+		      return OrWhereNull( expression )
+		    case else
+		      return OrWhereNotNull( expression )
+		    end select
+		    
+		  else
+		    
+		    select case comparison.Trim
+		    case "IS"
+		      comparison = "="
+		    case "IS NOT" 
+		      comparison = "<>"
+		    end select
+		    
+		    dim raw() as string
+		    if expression <> "" then
+		      raw.Append expression
+		    end if
+		    raw.Append comparison
+		    if value isa SQLBuilder_MTC.Statement then
+		      raw.Append "" // Adds a space
+		    else
+		      raw.Append kSQLPlaceholder
+		    end if
+		    
+		    return OrWhereRaw( join( raw, " " ), value )
+		    
+		  end if
 		  
 		End Function
 	#tag EndMethod
@@ -1125,7 +1209,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		      
 		    else // not inQuote
 		      select case char
-		      case """", "'"
+		      case """", "'", "`"
 		        quoteChar = char
 		        inQuote = true
 		        
@@ -1210,6 +1294,13 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		  sql = ReplacePlaceHolders( sql, phType )
 		  return sql
 		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Union(nextStatement As SQLBuilder_MTC.StatementInterface, isDistinct As Boolean = True) As SQLBuilder_MTC.AdditionalClause
+		  AppendNextStatement "UNION", nextStatement, isDistinct
+		  return self
 		End Function
 	#tag EndMethod
 
@@ -1301,6 +1392,13 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 
 	#tag Method, Flags = &h0
 		Function Where(expression As String, comparison As String, value As Variant) As SQLBuilder_MTC.WhereClause
+		  expression = expression.Trim
+		  comparison = comparison.Trim
+		  
+		  if comparison = "" then
+		    comparison = "="
+		  end if
+		  
 		  if value.IsNull then
 		    
 		    select case comparison.Trim
@@ -1319,7 +1417,18 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		      comparison = "<>"
 		    end select
 		    
-		    return WhereRaw( expression + " " + comparison + " " + kSQLPlaceholder, value )
+		    dim raw() as string
+		    if expression <> "" then
+		      raw.Append expression
+		    end if
+		    raw.Append comparison
+		    if value isa SQLBuilder_MTC.Statement then
+		      raw.Append "" // Adds a space
+		    else
+		      raw.Append kSQLPlaceholder
+		    end if
+		    
+		    return WhereRaw( join( raw, " " ), value )
 		    
 		  end if
 		  
@@ -1348,7 +1457,6 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		Function WhereExists(subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  return Where( "", "EXISTS", subQuery )
 		  
-		  return self
 		End Function
 	#tag EndMethod
 
@@ -1434,6 +1542,14 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 
+	#tag Note, Name = Information
+		
+		Loosely based on concepts inplemented in:
+		
+		http://knexjs.org/
+	#tag EndNote
+
+
 	#tag Property, Flags = &h21
 		Private FromParams() As SQLBuilder_MTC.FromParams
 	#tag EndProperty
@@ -1470,6 +1586,10 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 
 	#tag Property, Flags = &h21
 		Attributes( hidden ) Private mOperationType As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private NextStatements() As SQLBuilder_MTC.NextStatementParams
 	#tag EndProperty
 
 	#tag ComputedProperty, Flags = &h21
