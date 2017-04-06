@@ -8,6 +8,12 @@ Implements StatementInterface
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function GroupBy(ParamArray columns() As String) As SQLBuilder_MTC.AdditionalClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function Having(subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.AdditionalClause
 		  
 		End Function
@@ -33,6 +39,18 @@ Implements StatementInterface
 
 	#tag Method, Flags = &h0
 		Function Offset(offset As Integer) As SQLBuilder_MTC.AdditionalClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OrderBy(ParamArray columnIndexes() As Integer) As SQLBuilder_MTC.AdditionalClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OrderBy(ParamArray expression() As String) As SQLBuilder_MTC.AdditionalClause
 		  
 		End Function
 	#tag EndMethod

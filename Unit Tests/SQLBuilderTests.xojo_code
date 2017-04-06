@@ -598,6 +598,32 @@ Inherits TestGroup
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub PlaygroundTest()
+		  //
+		  // Arbitrary clauses
+		  //
+		  
+		  dim actual as string
+		  dim expected as string
+		  
+		  actual = SQLBuilder_MTC.SQLSelect ( "a.id, count(*)" ).From( "table1 a" ).From( "table2 b" ).WhereRaw( "a.id = b.id" ).WhereRaw( "a.thing>b.thing" ).GroupBy( "a.id" ).OrderBy( "a.id").ToString
+		  expected = "SELECT" + EndOfLine + _
+		  "  a.id, count(*)" + EndOfLine + _
+		  "FROM" + EndOfLine + _
+		  "  table1 a," + EndOfLine + _
+		  "  table2 b" + EndOfLine + _
+		  "WHERE" + EndOfLine + _
+		  "  a.id = b.id" + EndOfLine + _
+		  "  AND a.thing>b.thing" + EndOfLine + _
+		  "GROUP BY" + EndOfLine + _
+		  "  a.id" + EndOfLine + _
+		  "ORDER BY" + EndOfLine + _
+		  "  a.id" + EndOfLine
+		  Assert.AreEqual expected, actual
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub PrepareTest()
 		  self.StopTestOnFail = true
 		  
