@@ -256,6 +256,16 @@ Inherits TestGroup
 		  ).ToString
 		  expecteds.Append "SELECT * FROM ( SELECT * FROM table ) AS tab"
 		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "*" ).From( "table" ).LeftJoin( "table2", _
+		  SQLBuilder_MTC.SQLSelect( "" ).From( "table3 " ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table LEFT JOIN table2 ON ( SELECT * FROM table3 )"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "*" ).From( "table" ).RightJoin( "table2", _
+		  SQLBuilder_MTC.Where( "i", "<>", 3 ).Where( "b", "LIKE", "Jerry" ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table RIGHT JOIN table2 ON ( i <> ? AND b LIKE ? )"
+		  
 		  AssertEqualness expecteds, actuals
 		End Sub
 	#tag EndMethod

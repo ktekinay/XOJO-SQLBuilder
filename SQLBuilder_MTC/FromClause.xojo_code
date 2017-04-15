@@ -116,6 +116,12 @@ Implements StatementInterface
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function FullJoin(table As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.FromClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function FullJoin(table As String, onCondition As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
 		  
 		End Function
@@ -123,6 +129,12 @@ Implements StatementInterface
 
 	#tag Method, Flags = &h0
 		Function GroupBy(ParamArray columns() As String) As SQLBuilder_MTC.AdditionalClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function InnerJoin(table As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.FromClause
 		  
 		End Function
 	#tag EndMethod
@@ -140,6 +152,12 @@ Implements StatementInterface
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function Join(table As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.FromClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function Join(table As String, onCondition As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
 		  
 		End Function
@@ -147,6 +165,12 @@ Implements StatementInterface
 
 	#tag Method, Flags = &h0
 		Function JoinRaw(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function LeftJoin(table As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.FromClause
 		  
 		End Function
 	#tag EndMethod
@@ -182,6 +206,12 @@ Implements StatementInterface
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function OuterJoin(table As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.FromClause
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function OuterJoin(table As String, onCondition As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
 		  
 		End Function
@@ -189,6 +219,12 @@ Implements StatementInterface
 
 	#tag Method, Flags = &h0
 		Function Prepare(db As Database) As PreparedSQLStatement
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function RightJoin(table As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.FromClause
 		  
 		End Function
 	#tag EndMethod

@@ -17,7 +17,7 @@ Private Class FromParams
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		OnCondition As String
+		OnCondition As Variant
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -26,6 +26,11 @@ Private Class FromParams
 
 
 	#tag ViewBehavior
+		#tag ViewProperty
+			Name="AsAlias"
+			Group="Behavior"
+			Type="String"
+		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Index"
 			Visible=true
@@ -42,6 +47,7 @@ Private Class FromParams
 			Name="JoinExpression"
 			Group="Behavior"
 			Type="String"
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Left"
@@ -60,6 +66,7 @@ Private Class FromParams
 			Name="OnCondition"
 			Group="Behavior"
 			Type="String"
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"

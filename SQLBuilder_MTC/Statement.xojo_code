@@ -2,14 +2,14 @@
 Protected Class Statement
 Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterface,WithClause,StatementInterface
 	#tag Method, Flags = &h21
-		Private Sub AppendFromParam(isLateral As Boolean, expression As Variant, asAlias As String, joinExpression As String, onCondition As String, values() As Variant)
+		Private Sub AppendFromParam(isLateral As Boolean, expression As Variant, asAlias As String, joinExpression As String, onCondition As Variant, values() As Variant)
 		  dim f as new SQLBuilder_MTC.FromParams
 		  
 		  f.IsLateral = isLateral
 		  f.Expression = expression
 		  f.AsAlias = asAlias.Trim
 		  f.JoinExpression = joinExpression.Trim
-		  f.OnCondition = onCondition.Trim
+		  f.OnCondition = onCondition
 		  AppendToVariantArray f.Values, GetTrueValues( values )
 		  
 		  FromParams.Append f
@@ -149,9 +149,17 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		      end if
 		    end if
 		    
-		    if f.OnCondition <> "" then
+		    if f.OnCondition isa SQLBuilder_MTC.Statement or f.OnCondition.StringValue <> "" then
 		      stringBuilder.Append " ON ("
-		      stringBuilder.Append f.OnCondition
+		      if f.OnCondition isa SQLBuilder_MTC.Statement then
+		        stringBuilder.Append EndOfLine
+		        dim sb as SQLBuilder_MTC.Statement = f.OnCondition
+		        sb.BuildSQL indent + kIndentString, stringBuilder, values
+		        stringBuilder.Append EndOfLine
+		        stringBuilder.Append indent
+		      else
+		        stringBuilder.Append f.OnCondition.StringValue.Trim
+		      end if
 		      stringBuilder.Append ")"
 		    end if
 		    
@@ -768,6 +776,14 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function FullJoin(table As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.FromClause
+		  AppendFromParam false, table, "", "FULL JOIN", subQuery, nil
+		  return self
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function FullJoin(table As String, onCondition As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
 		  AppendFromParam false, table, "", "FULL JOIN", onCondition, values
 		  return self
@@ -913,6 +929,14 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function InnerJoin(table As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.FromClause
+		  AppendFromParam false, table, "", "INNER JOIN", SubQuery, nil
+		  return self
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function InnerJoin(table As String, onCondition As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
 		  AppendFromParam false, table, "", "INNER JOIN", onCondition, values
 		  return self
@@ -928,6 +952,14 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function Join(table As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.FromClause
+		  AppendFromParam false, table, "", "JOIN", subQuery, nil
+		  return self
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function Join(table As String, onCondition As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
 		  AppendFromParam false, table, "", "JOIN", onCondition, values
 		  return self
@@ -938,6 +970,14 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag Method, Flags = &h0
 		Function JoinRaw(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
 		  AppendFromParam false, "", "", expression, "", values
+		  return self
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function LeftJoin(table As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.FromClause
+		  AppendFromParam false, table, "", "LEFT JOIN", subQuery, nil
 		  return self
 		  
 		End Function
@@ -1147,6 +1187,14 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function OuterJoin(table As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.FromClause
+		  AppendFromParam false, table, "", "OUTER JOIN", subQuery, nil
+		  return self
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function OuterJoin(table As String, onCondition As String, ParamArray values() As Variant) As SQLBuilder_MTC.FromClause
 		  AppendFromParam false, table, "", "OUTER JOIN", onCondition, values
 		  return self
@@ -1223,6 +1271,14 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		  
 		  dim result as string = join( chars, "" )
 		  return result
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function RightJoin(table As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.FromClause
+		  AppendFromParam false, table, "", "RIGHT JOIN", subQuery, nil
+		  return self
 		  
 		End Function
 	#tag EndMethod
