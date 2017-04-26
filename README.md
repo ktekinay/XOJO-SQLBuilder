@@ -22,9 +22,11 @@ There are several advantages to this approach.
 
 Even though I've endeavored for maximum flexibility, there are some situations where using this module will be insufficient or unwieldy. In other words, it was not designed to meet every need, just the majority of needs.
 
+Some databases are not yet supported (Oracle, ODBC, and MSSQL).
+
 ## How To Use It
 
-Open the included project and copy the **SQLBuilder_MTC** module into your project.
+Open the included project and copy the **SQLBuilder\_MTC** and **SBSettings\_MTC** modules into your project. The latter is so you can easily turn off databases that you do not want compiled into your project and it is separate so you can update the main module later without touching those settings.
 
 To construct SQL, you can either instantiate a new `SQLBuilder_MTC.Statement` or call `SQLBuilder_MTC.SQLSelect( "*" )`. Each function in the `SQLBuilder_MTC.Statement` will return itself so you can chain the calls together.
 

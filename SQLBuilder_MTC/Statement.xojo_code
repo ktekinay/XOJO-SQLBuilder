@@ -1379,6 +1379,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		  dim type as integer = -1
 		  
 		  select case db
+		    #if SBSettings_MTC.kIncludeSQLite
 		  case isa SQLiteDatabase
 		    select case value.Type
 		    case Variant.TypeBoolean
@@ -1397,7 +1398,9 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		    case else
 		      type = SQLitePreparedStatement.SQLITE_BLOB
 		    end select
+		    #endif
 		    
+		    #if SBSettings_MTC.kIncludeMySQL
 		  case isa MySQLCommunityServer
 		    select case value.Type
 		    case Variant.TypeBoolean
@@ -1418,21 +1421,29 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		    case else
 		      type = MySQLPreparedStatement.MYSQL_TYPE_BLOB
 		    end select
+		    #endif
 		    
+		    #if SBSettings_MTC.kIncludeMSSQL
 		  case isa MSSQLServerDatabase
 		    raise new SQLBuilder_MTC.SQLBuilderException( "MSSQLServerDatabase is not yet supported", CurrentMethodName )
+		    #endif
 		    
+		    #if SBSettings_MTC.kIncludePostgreSQL
 		  case isa PostgreSQLDatabase
 		    //
 		    // Do nothing
 		    //
+		    #endif
 		    
+		    #if SBSettings_MTC.kIncludeODBC
 		  case isa ODBCDatabase
 		    raise new SQLBuilder_MTC.SQLBuilderException( "ODBCDatabase is not yet supported", CurrentMethodName )
+		    #endif
 		    
+		    #if SBSettings_MTC.kIncludeOracle
 		  case isa OracleDatabase
 		    raise new SQLBuilder_MTC.SQLBuilderException( "OracleDatabase is not yet supported", CurrentMethodName )
-		    
+		    #endif
 		  end select
 		  
 		  return type

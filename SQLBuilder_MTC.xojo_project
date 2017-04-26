@@ -6,6 +6,7 @@ MenuBar=MenuBar1;MenuBar1.xojo_menu;&h18745784;&h0;false
 Class=DesktopTestController;DesktopTestController.xojo_code;&h3FC78D4E;&h0;false
 Folder=XojoUnit;XojoUnit;&h2516B04D;&h0;false
 Folder=Unit Tests;Unit Tests;&h691E57FF;&h0;false
+Module=SBSettings_MTC;SBSettings_MTC.xojo_code;&h445647FF;&h0;false
 BuildSteps=Build Automation;Build Automation.xojo_code;&h7E1DE94C;&h0;false
 Module=SQLBuilder_MTC;SQLBuilder_MTC.xojo_code;&h73CF87FF;&h0;false
 Class=Statement;SQLBuilder_MTC/Statement.xojo_code;&h3C0D3FFF;&h73CF87FF;false
