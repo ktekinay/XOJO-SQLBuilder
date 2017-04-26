@@ -12,6 +12,38 @@ Inherits TestGroup
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub AdHocTest()
+		  dim actuals() as string
+		  dim expecteds() as string
+		  
+		  actuals.Append _
+		  SQLBuilder_MTC.SQLSelect( "" ) _
+		  .From( "table" ) _
+		  .Where( SQLBuilder_MTC _
+		  . Where( "i", 1 ) _
+		  . OrWhere( "b", ">", 2 ) _
+		  ) _
+		  .WhereBetween( "c", 5, 6 ) _
+		  .ToString
+		  expecteds.Append "SELECT * FROM table WHERE ( i = ? OR b > ? ) AND c BETWEEN ? AND ?"
+		  
+		  actuals.Append   SQLBuilder_MTC.SQLWith( "some_data", SQLBuilder_MTC _
+		  . SQLSelect( "id" ) _
+		  . From( "related_table" ) _
+		  . Where( "some_column", 3 ) _  
+		  ) _
+		  .SQLSelect( "" ) _
+		  .From( "table ") _
+		  .WhereInQuery( "id", SQLBuilder_MTC.SQLSelect( "" ).From( "some_data" ) ) _
+		  .ToString
+		  expecteds.Append "WITH some_data AS ( SELECT id FROM related_table WHERE some_column = ? ) " + _
+		  "SELECT * FROM table WHERE id IN ( SELECT * FROM some_data )"
+		  
+		  AssertEqualness expecteds, actuals
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h21
 		Private Sub AssertEqualness(expecteds() As String, actuals() As String)
 		  for i as integer = 0 to actuals.Ubound
@@ -521,6 +553,23 @@ Inherits TestGroup
 		  ).ToString
 		  expecteds.Append "( SELECT * FROM table1 WHERE i = ? ) UNION ( SELECT * FROM table2 ) " + _
 		  "INTERSECT ( SELECT * FROM table3 ) EXCEPT ALL ( SELECT * FROM table4 )"
+		  
+		  AssertEqualness expecteds, actuals
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub NullSubstitutionTest()
+		  dim actuals() as string
+		  dim expecteds() as string
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ) _
+		  .Where( "h", nil ).Where( "i", "<>", nil ).Where( "j", "!=", nil ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE h IS NULL AND i IS NOT NULL AND j IS NOT NULL"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ) _
+		  .Where( "h", "IS", 1 ).Where( "i", "IS NOT", 2 ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE h = ? AND i <> ?"
 		  
 		  AssertEqualness expecteds, actuals
 		End Sub
