@@ -480,23 +480,23 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondOrWhereIn(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
-		  if includeIf then
-		    return OrWhereIn( expression, subQuery )
-		  else
-		    return self
-		  end if
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Function CondOrWhereIn(includeIf As Boolean, expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
 		  if includeIf then
 		    return OrWhereIn( expression, values )
 		  else
 		    return self
 		  end if
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondOrWhereInQuery(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return OrWhereIn( expression, subQuery )
+		  else
+		    return self
+		  end if
+		  
 		End Function
 	#tag EndMethod
 
@@ -534,9 +534,9 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondOrWhereNotIn(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
+		Function CondOrWhereNotIn(includeIf As Boolean, expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
 		  if includeIf then
-		    return OrWhereNotIn( expression, subQuery )
+		    return OrWhereNotIn( expression, values )
 		  else
 		    return self
 		  end if
@@ -544,9 +544,9 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondOrWhereNotIn(includeIf As Boolean, expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		Function CondOrWhereNotInQuery(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  if includeIf then
-		    return OrWhereNotIn( expression, values )
+		    return OrWhereNotIn( expression, subQuery )
 		  else
 		    return self
 		  end if
@@ -636,23 +636,23 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondWhereIn(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
-		  if includeIf then
-		    return WhereIn( expression, subQuery )
-		  else
-		    return self
-		  end if
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Function CondWhereIn(includeIf As Boolean, expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
 		  if includeIf then
 		    return WhereIn( expression, values )
 		  else
 		    return self
 		  end if
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CondWhereInQuery(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
+		  if includeIf then
+		    return WhereIn( expression, subQuery )
+		  else
+		    return self
+		  end if
+		  
 		End Function
 	#tag EndMethod
 
@@ -690,9 +690,9 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondWhereNotIn(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
+		Function CondWhereNotIn(includeIf As Boolean, expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
 		  if includeIf then
-		    return WhereNotIn( expression, subQuery )
+		    return WhereNotIn( expression, values )
 		  else
 		    return self
 		  end if
@@ -700,9 +700,9 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CondWhereNotIn(includeIf As Boolean, expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		Function CondWhereNotInQuery(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  if includeIf then
-		    return WhereNotIn( expression, values )
+		    return WhereNotIn( expression, subQuery )
 		  else
 		    return self
 		  end if
@@ -1110,17 +1110,17 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function OrWhereIn(expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
-		  return OrWhere( expression, "IN", subQuery )
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Function OrWhereIn(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
 		  dim placeholders() as string = ValuesToPlaceholders( values )
 		  AppendWhereParam expression + " IN (" + join( placeholders, "," ) + ")", values, false, true
 		  return self
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OrWhereInQuery(expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
+		  return OrWhere( expression, "IN", subQuery )
+		  
 		End Function
 	#tag EndMethod
 
@@ -1151,17 +1151,17 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function OrWhereNotIn(expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
-		  return OrWhere( expression, "NOT IN", subQuery )
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Function OrWhereNotIn(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
 		  dim placeholders() as string = ValuesToPlaceholders( values )
 		  AppendWhereParam expression + " NOT IN (" + join( placeholders, "," ) + ")", values, false, true
 		  return self
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function OrWhereNotInQuery(expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
+		  return OrWhere( expression, "NOT IN", subQuery )
+		  
 		End Function
 	#tag EndMethod
 
@@ -1517,17 +1517,17 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereIn(expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
-		  return Where( expression, "IN", subQuery )
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Function WhereIn(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
 		  dim placeholders() as string = ValuesToPlaceholders( values )
 		  AppendWhereParam expression + " IN (" + join( placeholders, "," ) + ")", values, false, false
 		  return self
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function WhereInQuery(expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
+		  return Where( expression, "IN", subQuery )
+		  
 		End Function
 	#tag EndMethod
 
@@ -1559,18 +1559,18 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WhereNotIn(expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
-		  return Where( expression, "NOT IN", subQuery )
-		  
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Function WhereNotIn(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
 		  dim placeholders() as string = ValuesToPlaceholders( values )
 		  AppendWhereParam expression + " NOT IN (" + join( placeholders, "," ) + ")", values, false, false
 		  return self
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function WhereNotInQuery(expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
+		  return Where( expression, "NOT IN", subQuery )
+		  
+		  
 		End Function
 	#tag EndMethod
 
