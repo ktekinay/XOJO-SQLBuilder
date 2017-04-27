@@ -1,21 +1,12 @@
 #tag Class
-Protected Class SQLDelete_MTC
-Inherits SQLBuilder_MTC
-	#tag Method, Flags = &h1000
-		Sub Constructor()
-		  // Calling the overridden superclass constructor.
-		  Super.Constructor
-		  
-		End Sub
-	#tag EndMethod
+Private Class WithParams
+	#tag Property, Flags = &h0
+		Alias As String
+	#tag EndProperty
 
-	#tag Method, Flags = &h0
-		Function Where(sql As String) As SQLDelete_MTC
-		  super.Where( sql )
-		  
-		  return self
-		End Function
-	#tag EndMethod
+	#tag Property, Flags = &h0
+		SubQuery As SQLBuilder_MTC.Statement
+	#tag EndProperty
 
 
 	#tag ViewBehavior
@@ -38,6 +29,11 @@ Inherits SQLBuilder_MTC
 			Visible=true
 			Group="ID"
 			Type="String"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="SubQuery"
+			Group="Behavior"
+			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"

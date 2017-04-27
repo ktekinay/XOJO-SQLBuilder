@@ -1,20 +1,13 @@
 #tag Class
-Protected Class SQLUpdate_MTC
-Inherits SQLBuilder_MTC
-	#tag Method, Flags = &h1000
-		Sub Constructor()
-		  // Calling the overridden superclass constructor.
-		  Super.Constructor
-		  
-		End Sub
-	#tag EndMethod
+Private Class SelectParams
+Inherits SQLBuilder_MTC.Params
+	#tag Property, Flags = &h0
+		Expression As String
+	#tag EndProperty
 
-	#tag Method, Flags = &h0
-		Function Where(sql As String) As SQLUpdate_MTC
-		  super.Where( sql )
-		  return self
-		End Function
-	#tag EndMethod
+	#tag Property, Flags = &h0
+		Values() As Variant
+	#tag EndProperty
 
 
 	#tag ViewBehavior

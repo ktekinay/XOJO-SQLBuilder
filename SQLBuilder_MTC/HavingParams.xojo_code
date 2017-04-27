@@ -1,16 +1,20 @@
 #tag Class
-Protected Class SQLInsert_MTC
-Inherits SQLBuilder_MTC
-	#tag Method, Flags = &h1000
-		Sub Constructor()
-		  // Calling the overridden superclass constructor.
-		  Super.Constructor
-		  
-		End Sub
-	#tag EndMethod
+Private Class HavingParams
+	#tag Property, Flags = &h0
+		Expression As Variant
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		Values() As Variant
+	#tag EndProperty
 
 
 	#tag ViewBehavior
+		#tag ViewProperty
+			Name="Expression"
+			Group="Behavior"
+			Type="Integer"
+		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Index"
 			Visible=true

@@ -1,5 +1,5 @@
 #tag Window
-Begin Window Window1
+Begin Window XojoUnitAboutWindow
    BackColor       =   &cFFFFFF00
    Backdrop        =   0
    CloseButton     =   True
@@ -9,30 +9,28 @@ Begin Window Window1
    FullScreen      =   False
    FullScreenButton=   False
    HasBackColor    =   False
-   Height          =   400
+   Height          =   192
    ImplicitInstance=   True
    LiveResize      =   True
    MacProcID       =   0
    MaxHeight       =   32000
    MaximizeButton  =   False
    MaxWidth        =   32000
-   MenuBar         =   410277764
+   MenuBar         =   0
    MenuBarVisible  =   True
    MinHeight       =   64
-   MinimizeButton  =   True
+   MinimizeButton  =   False
    MinWidth        =   64
    Placement       =   0
-   Resizeable      =   True
-   Title           =   "Untitled"
+   Resizeable      =   False
+   Title           =   "About XojoUnit"
    Visible         =   True
-   Width           =   600
-   Begin PushButton btnCode
+   Width           =   301
+   Begin Label AppNameLabel
       AutoDeactivate  =   True
-      Bold            =   False
-      ButtonStyle     =   "0"
-      Cancel          =   False
-      Caption         =   "Code"
-      Default         =   False
+      Bold            =   True
+      DataField       =   ""
+      DataSource      =   ""
       Enabled         =   True
       Height          =   20
       HelpTag         =   ""
@@ -45,85 +43,70 @@ Begin Window Window1
       LockLeft        =   True
       LockRight       =   False
       LockTop         =   True
+      Multiline       =   False
       Scope           =   0
-      TabIndex        =   0
+      Selectable      =   False
+      TabIndex        =   2
       TabPanelIndex   =   0
       TabStop         =   True
+      Text            =   "XojoUnit"
+      TextAlign       =   1
+      TextColor       =   &c00000000
       TextFont        =   "System"
-      TextSize        =   0.0
+      TextSize        =   14.0
       TextUnit        =   0
-      Top             =   14
+      Top             =   20
+      Transparent     =   False
       Underline       =   False
       Visible         =   True
-      Width           =   80
+      Width           =   261
    End
-   Begin TextArea fldResult
-      AcceptTabs      =   False
-      Alignment       =   0
+   Begin Label VersionLabel
       AutoDeactivate  =   True
-      AutomaticallyCheckSpelling=   True
-      BackColor       =   &cFFFFFF00
       Bold            =   False
-      Border          =   True
       DataField       =   ""
       DataSource      =   ""
       Enabled         =   True
-      Format          =   ""
-      Height          =   334
+      Height          =   20
       HelpTag         =   ""
-      HideSelection   =   True
       Index           =   -2147483648
+      InitialParent   =   ""
       Italic          =   False
       Left            =   20
-      LimitText       =   0
-      LineHeight      =   0.0
-      LineSpacing     =   1.0
-      LockBottom      =   True
+      LockBottom      =   False
       LockedInPosition=   False
       LockLeft        =   True
-      LockRight       =   True
+      LockRight       =   False
       LockTop         =   True
-      Mask            =   ""
-      Multiline       =   True
-      ReadOnly        =   False
+      Multiline       =   False
       Scope           =   0
-      ScrollbarHorizontal=   False
-      ScrollbarVertical=   True
-      Styled          =   False
-      TabIndex        =   1
+      Selectable      =   False
+      TabIndex        =   3
       TabPanelIndex   =   0
       TabStop         =   True
-      Text            =   ""
+      Text            =   "Version"
+      TextAlign       =   1
       TextColor       =   &c00000000
-      TextFont        =   "System"
+      TextFont        =   "SmallSystem"
       TextSize        =   0.0
       TextUnit        =   0
-      Top             =   46
+      Top             =   40
+      Transparent     =   False
       Underline       =   False
-      UseFocusRing    =   True
       Visible         =   True
-      Width           =   560
+      Width           =   261
    End
 End
 #tag EndWindow
 
 #tag WindowCode
-	#tag Method, Flags = &h0
-		Sub AddToResult(msg As Variant)
-		  fldResult.AppendText msg.StringValue
-		  fldResult.AppendText EndOfLine
-		  
-		End Sub
-	#tag EndMethod
-
-
 #tag EndWindowCode
 
-#tag Events btnCode
+#tag Events VersionLabel
 	#tag Event
-		Sub Action()
-		  AddToResult _
-		  SQLBuilder_MTC.SQLSelect( "a", "b", "c" ).From( "some_table" ).Where("a = b AND c = d" ).OrderBy( "a" ).Limit( 3 ).ToString
+		Sub Open()
+		  Me.Text = "Version " + TestController.XojoUnitVersion
+		  
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -175,7 +158,6 @@ End
 			"7 - Global Floating Window"
 			"8 - Sheet Window"
 			"9 - Metal Window"
-			"10 - Drawer Window"
 			"11 - Modeless Dialog"
 		#tag EndEnumValues
 	#tag EndViewProperty
