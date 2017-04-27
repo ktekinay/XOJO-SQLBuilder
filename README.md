@@ -22,6 +22,8 @@ There are several advantages to this approach.
 
 Even though I've endeavored for maximum flexibility, there are some situations where using this module will be insufficient or unwieldy. In other words, it was not designed to meet every need, just the majority of needs.
 
+There is only limited error checking so it you want to do something that makes no sense at all, this module won't try to stop you.
+
 Some databases are not yet supported (Oracle, ODBC, and MSSQL).
 
 ## How To Use It
@@ -149,10 +151,10 @@ As a convenience, you can initiate most statements directly from the module so y
 In many of these function you are asked for a ParamArray of Variant values. In those cases, you can supply values individually or supply an array. **SQLBuilder_MTC** will intelligently extract the right values. For example, these will be treated the same:
 
 ```
-.WhereIn( "a", 1, 2, 3 )
+call SQLBuilder_MTC.WhereIn( "a", 1, 2, 3 )
 
 dim arr() as integer = array( 1, 2, 3 )
-.WhereIn( "a", arr )
+call SQLBuilder_MTC.WhereIn( "a", arr )
 ```
 
 ## <a name="placeholders"></a>A Word About Placeholders
