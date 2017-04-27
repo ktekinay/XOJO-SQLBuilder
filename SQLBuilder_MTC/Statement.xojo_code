@@ -1379,6 +1379,8 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		  dim type as integer = -1
 		  
 		  select case db
+		  case isa Date // Nonsense needed for the compiler
+		    
 		    #if SBSettings_MTC.kIncludeSQLite
 		  case isa SQLiteDatabase
 		    select case value.Type
@@ -1444,6 +1446,11 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		  case isa OracleDatabase
 		    raise new SQLBuilder_MTC.SQLBuilderException( "OracleDatabase is not yet supported", CurrentMethodName )
 		    #endif
+		    
+		  case else
+		    raise new SQLBuilder_MTC.SQLBuilderException( _
+		    "Unrecognized database type (perhaps it's been disabled in SBSettings?)", CurrentMethodName )
+		    
 		  end select
 		  
 		  return type
