@@ -223,7 +223,7 @@ end if
 
 dim sql as string = _
   "SELECT * FROM person WHERE " + _
-  join( whereClause, " OR " )
+  join( whereClause, " AND " )
 
 dim ps as PreparedSQLStatement = db.Prepare( sql )
 for i as integer = 0 to values.Ubound
@@ -239,13 +239,11 @@ The same code with **SQLBuilder_MTC**:
 dim rs as RecordSet = _
   SQLBuilder_MTC.SQLSelect( "*" ) _
   .From( "person" ) _
-  .CondOrWhere( firstName <> "", "first_name", firstName ) _
-  .CondOrWhere( lastName <> "", "last_name", lastName ) _
-  .CondOrWhere( zipCode <> "", "zip", zipCode ) _
+  .CondWhere( firstName <> "", "first_name", firstName ) _
+  .CondWhere( lastName <> "", "last_name", lastName ) _
+  .CondWhere( zipCode <> "", "zip", zipCode ) _
   .Prepare( db ).SQLSelect
 ```
-
-Note that `CondOrWhere` is used even for the first clause instead of `CondWhere`. **SQLBuilder_MTC** will properly render that.
 
 ### Where Clause
 
