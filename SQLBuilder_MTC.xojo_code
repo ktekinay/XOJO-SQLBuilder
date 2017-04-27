@@ -36,16 +36,16 @@ Protected Module SQLBuilder_MTC
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function CondWhereIn(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
+		Protected Function CondWhereIn(includeIf As Boolean, expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
 		  dim s as new SQLBuilder_MTC.Statement
-		  return s.CondWhereIn( includeIf, expression, subQuery )
+		  return s.CondWhereIn( includeIf, expression, values )
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function CondWhereIn(includeIf As Boolean, expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		Protected Function CondWhereInQuery(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  dim s as new SQLBuilder_MTC.Statement
-		  return s.CondWhereIn( includeIf, expression, values )
+		  return s.CondWhereInQuery( includeIf, expression, subQuery )
 		End Function
 	#tag EndMethod
 
@@ -71,16 +71,16 @@ Protected Module SQLBuilder_MTC
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function CondWhereNotIn(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
+		Protected Function CondWhereNotIn(includeIf As Boolean, expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
 		  dim s as new SQLBuilder_MTC.Statement
-		  return s.CondWhereNotIn( includeIf, expression, subQuery )
+		  return s.CondWhereNotIn( includeIf, expression, values )
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function CondWhereNotIn(includeIf As Boolean, expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		Protected Function CondWhereNotInQuery(includeIf As Boolean, expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  dim s as new SQLBuilder_MTC.Statement
-		  return s.CondWhereNotIn( includeIf, expression, values )
+		  return s.CondWhereNotInQuery( includeIf, expression, subQuery )
 		End Function
 	#tag EndMethod
 
@@ -180,16 +180,16 @@ Protected Module SQLBuilder_MTC
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function WhereIn(expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
+		Protected Function WhereIn(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
 		  dim s as new SQLBuilder_MTC.Statement
-		  return s.WhereIn( expression, subQuery )
+		  return s.WhereIn( expression, values )
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function WhereIn(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		Protected Function WhereInQuery(expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  dim s as new SQLBuilder_MTC.Statement
-		  return s.WhereIn( expression, values )
+		  return s.WhereInQuery( expression, subQuery )
 		End Function
 	#tag EndMethod
 
@@ -215,16 +215,16 @@ Protected Module SQLBuilder_MTC
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function WhereNotIn(expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
+		Protected Function WhereNotIn(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
 		  dim s as new SQLBuilder_MTC.Statement
-		  return s.WhereNotIn( expression, subQuery )
+		  return s.WhereNotIn( expression, values )
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function WhereNotIn(expression As String, ParamArray values() As Variant) As SQLBuilder_MTC.WhereClause
+		Protected Function WhereNotInQuery(expression As String, subQuery As SQLBuilder_MTC.StatementInterface) As SQLBuilder_MTC.WhereClause
 		  dim s as new SQLBuilder_MTC.Statement
-		  return s.WhereNotIn( expression, values )
+		  return s.WhereNotInQuery( expression, subQuery )
 		End Function
 	#tag EndMethod
 
