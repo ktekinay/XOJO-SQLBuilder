@@ -11,6 +11,7 @@ Talking to a database involves creating text-based "scripts" in SQL, and these c
 There are several advantages to this approach.
 
 - By using this builder, you can keep your SQL close to your code rather than in, for example, a constant, and that makes it easier to debug.
+- Mixing languages can be problematic in any environment. With this, you can use pure Xojo code to craft your queries, making it easier to read, debug, and maintain.
 - By supplying values in the individual clauses, you can avoid tracking and matching the parameters of a prepared statement to its value.
 - Where your SQL will depend on outside factors that determine whether certain clauses are included, you can use "conditional where" clauses and avoid messy `if` constructs. You also avoid parameter tracking.
 - You can use the builder to closely match SQL syntax with auto-complete helping at each stage.
@@ -44,7 +45,7 @@ To construct SQL, you can either instantiate a new `SQLBuilder_MTC.Statement` or
 
 ## Functions
 
-### Secions
+### Sections
 
 - [With](#with)
 - [Select](#select)
