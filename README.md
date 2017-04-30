@@ -35,138 +35,13 @@ To construct SQL, you can either instantiate a new `SQLBuilder_MTC.Statement` or
 
 ## Table Of Contents
 
+- [Examples](#examples)
 - [Functions](#functions)
 - [A Word About Parameters](#parameters)
 - [A Word About Placeholders](#placeholders)
-- [Examples](#examples)
 - [Who Did This?](#whodidthis)
 - [FAQ](#faq)
 - [Release Notes](#releasenotes)
-
-## Functions
-
-### Sections
-
-- [With](#with)
-- [Select](#select)
-- [From](#from)
-- [Joins](#joins)
-- [Where](#where)
-- [Conditional Where](#conditionalwhere)
-- [Group By, Having, Order By, Limit, Offset](#groupby)
-- [Union, Intersect, Except](#union)
-- [ToString, Prepare](#tostring)
-- [SQLBuilder\_MTC](#sqlbuilder_mtc)
-
-
-The **SQLBuilder_MTC** module is designed to help you with SQL construction by using auto-complete to lead you through it. For example, it wouldn't make sense to follow a FROM clause with SELECT, so you will only see what's possible. The tables describes these functions in the order they might appear in your SQL statement.
-
-_Note: Auto-complete does not work across line breaks like in the examples below._
-
-### With
-
-| function       | parameters                                      |
-|----------------|-------------------------------------------------|
-| SQLWith | alias As String, subQuery As SQLBuilder_MTC.StatementInterface |
-
-### Select
-
-| function       | parameters                                      |
-|----------------|-------------------------------------------------|
-| SQLSelect | expression As String, ParamArray values() As Variant |
-| SQLSelectDistinct | expression As String, ParamArray values() As Variant |
-
-### From
-
-| function       | parameters                                      |
-|----------------|-------------------------------------------------|
-| From | expression As String, ParamArray values() As Variant <br /> subQuery As SQLBuilder_MTC.StatementInterface |
-
-### Joins
-
-| function       | parameters                                      |
-|----------------|-------------------------------------------------|
-| Join <br /> LeftJoin <br /> RightJoin <br />  InnerJoin <br /> OuterJoin <br /> FullJoin | table As String, onCondition As String, ParamArray values() As Variant <br /> table As String, subQuery As SQLBuilder_MTC.StatementInterface |
-| CrossJoin | table As String |
-| JoinRaw | expression As String, ParamArray values() As Variant |
-
-### Where
-
-| function       | parameters                                      |
-|----------------|-------------------------------------------------|
-| Where <br /> OrWhere | expression As String, value As Variant <br /> expression As String, comparison As String, value As Variant <br /> statement As SQLBuilder_MTC.StatementInterface |
-| WhereBetween <br /> OrWhereBetween <br /> WhereNotBetween <br /> OrWhereNotBetween | expression As String, lowValue As Variant, highValue As Variant |
-| WhereExists <br /> OrWhereExists <br /> WhereNotExists <br /> OrWhereNotExists | subQuery As SQLBuilder_MTC.StatementInterface |
-| WhereIn <br /> OrWhereIn <br /> WhereNotIn <br /> OrWhereNotIn | expression As String, ParamArray values() As Variant |
-| WhereInQuery <br /> OrWhereInQuery <br /> WhereNotInQuery <br /> OrWhereNotInQuery | expression As String, subQuery As SQLBuilder_MTC.StatementInterface |
-| WhereNot <br /> OrWhereNot | statement As SQLBuilder_MTC.StatementInterface |
-| WhereNull <br /> OrWhereNull <br /> WhereNotNull <br /> OrWhereNotNull | expression As String |
-| WhereRaw <br /> OrWhereRaw | expression As String, ParamArray values() As Variant |
-
-#### <a name="conditionalwhere"></a>Conditional Where
-
-Each Where clause has a corresponding "conditional" where clause that will only be included if the given condition is true. To use the conditional version, prefix "Cond" to the function name and supply a boolean as the first parameter. For example:
-
-```
-.Where( "i", 3 )
-.CondWhere( boolCondition, "i", 3 ) // Included only if boolCondition is true
-
-.OrWhereIn( "a", 1, 2, 3 )
-.CondOrWhereIn( boolCondition, "a", 1, 2, 3 )
-```
-### <a name="groupby"></a>Group By, Having, Order By, Limit, Offset
-
-| function       | parameters                                      |
-|----------------|-------------------------------------------------|
-| Group By | ParamArray columns() As String |
-| Having | expression As String, ParamArray values() As Variant <br /> subQuery As SQLBuilder_MTC.StatementInterface |
-| Order By | ParamArray columnIndexes() As Integer <br /> ParamArray expression() As String |
-| Limit | limit As Integer |
-| Offset | offset As Integer |
-
-### <a name="union"></a>Union, Intersect, Except
-
-You can join multiple statements together using Union, Interect, and Except.
-
-| function       | parameters                                      |
-|----------------|-------------------------------------------------|
-| Union <br /> Intersect <br /> Except | nextStatement As SQLBuilder_MTC.StatementInterface, isDistinct As Boolean = True |
-
-### <a name="tostring"></a>ToString, Prepare
-
-Once the statement is complete, you will want to do something with it. These functions will process it for you.
-
-| function | parameters | returns|
-|----------|------------|--------|
-| ToString | db As Database <br /> phType As SQLBuilder\_MTC.PHTypes = SQLBuilder\_MTC.PHTypes.QuestionMark | String |
-| Prepare | db As Database | PreparedSQLStatement |
-
-_Note: The `PHTypes` enum will let you specify a placeholder type if you don't have a database instance handy and just want to view the statement as a string._
-
-### SQLBuilder\_MTC
-
-As a convenience, you can initiate most statements directly from the module so you do not have to create a separate `Statement` object. The module functions include the SQLWith, SQLSelect, Where, and Conditional Where clauses.
-
-## <a name="parameters"></a>A Word About Parameters
-
-In many of these function you are asked for a ParamArray of Variant values. In those cases, you can supply values individually or supply an array. **SQLBuilder_MTC** will intelligently extract the right values. For example, these will be treated the same:
-
-```
-call SQLBuilder_MTC.WhereIn( "a", 1, 2, 3 )
-
-dim arr() as integer = array( 1, 2, 3 )
-call SQLBuilder_MTC.WhereIn( "a", arr )
-```
-
-## <a name="placeholders"></a>A Word About Placeholders
-
-When creating prepared statements, different engines have different requirements. For instance, MySQL takes its paramters as "?" while PostgreSQL requires the form "$1". To maintain compatibility across engines, **SQLBuilder_MTC** expects only "?". For example:
-
-```
-.WhereRaw( "i = ? and j between ? and ?" )
-```
-
-The placeholders will be replaced correctly when processed against a database with either `ToString` or `Prepare`.
 
 ## Examples
 
@@ -234,7 +109,7 @@ next
 dim rs as RecordSet = ps.SQLSelect
 ```
 
-The same code with **SQLBuilder_MTC**:
+The same result with **SQLBuilder_MTC**:
 
 ```
 dim rs as RecordSet = _
@@ -292,9 +167,134 @@ dim rs as RecordSet = _
   ) _
   .SQLSelect( "" ) _
   .From( "table ") _
-  .WhereInQuery( "id", SQLBuilder_MTC.SQLSelect( "" ).From( "some_data ) ) _
+  .WhereInQuery( "id", SQLBuilder_MTC.SQLSelect( "" ).From( "some_data" ) ) _
   .Prepare( db ).SQLSelect
 ```
+
+## Functions
+
+### Sections
+
+- [With](#with)
+- [Select](#select)
+- [From](#from)
+- [Joins](#joins)
+- [Where](#where)
+- [Conditional Where](#conditionalwhere)
+- [Group By, Having, Order By, Limit, Offset](#groupby)
+- [Union, Intersect, Except](#union)
+- [ToString, Prepare](#tostring)
+- [SQLBuilder\_MTC](#sqlbuilder_mtc)
+
+
+The **SQLBuilder_MTC** module is designed to help you with SQL construction by using auto-complete to lead you through it. For example, it wouldn't make sense to follow a FROM clause with SELECT, so you will only see what's possible. The tables describes these functions in the order they might appear in your SQL statement.
+
+_Note: Auto-complete does not work across line breaks like in the examples below._
+
+### With
+
+| function       | parameters                                      |
+|----------------|-------------------------------------------------|
+| SQLWith | alias As String, subQuery As SQLBuilder_MTC.StatementInterface |
+
+### Select
+
+| function       | parameters                                      |
+|----------------|-------------------------------------------------|
+| SQLSelect | expression As String, ParamArray values() As Variant |
+| SQLSelectDistinct | expression As String, ParamArray values() As Variant |
+
+### From
+
+| function       | parameters                                      |
+|----------------|-------------------------------------------------|
+| From | expression As String, ParamArray values() As Variant <br /> _or_ <br /> subQuery As SQLBuilder_MTC.StatementInterface |
+
+### Joins
+
+| function       | parameters                                      |
+|----------------|-------------------------------------------------|
+| Join <br /> LeftJoin <br /> RightJoin <br />  InnerJoin <br /> OuterJoin <br /> FullJoin | table As String, onCondition As String, ParamArray values() As Variant <br /> _or_ <br /> table As String, subQuery As SQLBuilder_MTC.StatementInterface |
+| CrossJoin | table As String |
+| JoinRaw | expression As String, ParamArray values() As Variant |
+
+### Where
+
+| function       | parameters                                      |
+|----------------|-------------------------------------------------|
+| Where <br /> OrWhere | expression As String, value As Variant <br /> _or_ <br /> expression As String, comparison As String, value As Variant <br /> _or_ <br /> statement As SQLBuilder\_MTC.StatementInterface |
+| WhereBetween <br /> OrWhereBetween <br /> WhereNotBetween <br /> OrWhereNotBetween | expression As String, lowValue As Variant, highValue As Variant |
+| WhereExists <br /> OrWhereExists <br /> WhereNotExists <br /> OrWhereNotExists | subQuery As SQLBuilder\_MTC.StatementInterface |
+| WhereIn <br /> OrWhereIn <br /> WhereNotIn <br /> OrWhereNotIn | expression As String, ParamArray values() As Variant |
+| WhereInQuery <br /> OrWhereInQuery <br /> WhereNotInQuery <br /> OrWhereNotInQuery | expression As String, subQuery As SQLBuilder\_MTC.StatementInterface |
+| WhereNot <br /> OrWhereNot | statement As SQLBuilder_MTC.StatementInterface |
+| WhereNull <br /> OrWhereNull <br /> WhereNotNull <br /> OrWhereNotNull | expression As String |
+| WhereRaw <br /> OrWhereRaw | expression As String, ParamArray values() As Variant |
+
+#### <a name="conditionalwhere"></a>Conditional Where
+
+Each Where clause has a corresponding "conditional" where clause that will only be included if the given condition is true. To use the conditional version, prefix "Cond" to the function name and supply a boolean as the first parameter. For example:
+
+```
+.Where( "i", 3 )
+.CondWhere( boolCondition, "i", 3 ) // Included only if boolCondition is true
+
+.OrWhereIn( "a", 1, 2, 3 )
+.CondOrWhereIn( boolCondition, "a", 1, 2, 3 )
+```
+### <a name="groupby"></a>Group By, Having, Order By, Limit, Offset
+
+| function       | parameters                                      |
+|----------------|-------------------------------------------------|
+| Group By | ParamArray columns() As String |
+| Having | expression As String, ParamArray values() As Variant <br /> _or_ <br /> subQuery As SQLBuilder\_MTC.StatementInterface |
+| Order By | ParamArray columnIndexes() As Integer <br /> _or_ <br /> ParamArray expression() As String |
+| Limit | limit As Integer |
+| Offset | offset As Integer |
+
+### <a name="union"></a>Union, Intersect, Except
+
+You can join multiple statements together using Union, Interect, and Except.
+
+| function       | parameters                                      |
+|----------------|-------------------------------------------------|
+| Union <br /> Intersect <br /> Except | nextStatement As SQLBuilder_MTC.StatementInterface, isDistinct As Boolean = True |
+
+### <a name="tostring"></a>ToString, Prepare
+
+Once the statement is complete, you will want to do something with it. These functions will process it for you.
+
+| function | parameters | returns|
+|----------|------------|--------|
+| ToString | db As Database <br /> _or_ <br /> phType As SQLBuilder\_MTC.PHTypes = SQLBuilder\_MTC.PHTypes.QuestionMark | String |
+| Prepare | db As Database | PreparedSQLStatement |
+
+_Note: The `PHTypes` enum will let you specify a placeholder type if you don't have a database instance handy and just want to view the statement as a string._
+
+### SQLBuilder\_MTC
+
+As a convenience, you can initiate most statements directly from the module so you do not have to create a separate `Statement` object. The module functions include the SQLWith, SQLSelect, Where, and Conditional Where clauses.
+
+## <a name="parameters"></a>A Word About Parameters
+
+In many of these function you are asked for a ParamArray of Variant values. In those cases, you can supply values individually or supply an array. **SQLBuilder_MTC** will intelligently extract the right values. For example, these will be treated the same:
+
+```
+call SQLBuilder_MTC.WhereIn( "a", 1, 2, 3 )
+
+dim arr() as integer = array( 1, 2, 3 )
+call SQLBuilder_MTC.WhereIn( "a", arr )
+```
+
+## <a name="placeholders"></a>A Word About Placeholders
+
+When creating prepared statements, different engines have different requirements. For instance, MySQL takes its paramters as "?" while PostgreSQL requires the form "$1". To maintain compatibility across engines, **SQLBuilder_MTC** expects only "?". For example:
+
+```
+.WhereRaw( "i = ? and j between ? and ?" )
+```
+
+The placeholders will be replaced correctly when processed against a database with either `ToString` or `Prepare`.
 
 ## <a name="whodidthis"></a>Who Did This?
 
