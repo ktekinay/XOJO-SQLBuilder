@@ -102,6 +102,106 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
+		Private Sub BindValue(ps As PreparedSQLStatement, index As Integer, value As Variant, dbType As DBTypes)
+		  //
+		  // Handle currency
+		  //
+		  if value.Type = Variant.TypeCurrency then
+		    dim c as currency = value.CurrencyValue
+		    dim d as double = c
+		    value = d
+		  end if
+		  
+		  const kNoType = -9999
+		  
+		  dim type as integer = kNoType
+		  
+		  select case dbType
+		    
+		  case dbTypes.SQLite
+		    select case value.Type
+		    case Variant.TypeBoolean
+		      type = SQLitePreparedStatement.SQLITE_BOOLEAN
+		    case Variant.TypeDate
+		      value = value.DateValue.SQLDateTime
+		      type = SQLitePreparedStatement.SQLITE_TEXT
+		    case Variant.TypeDouble, Variant.TypeSingle
+		      type = SQLitePreparedStatement.SQLITE_DOUBLE
+		    case Variant.TypeInt64, Variant.TypeInt32, Variant.TypeInteger
+		      type = SQLitePreparedStatement.SQLITE_INTEGER
+		    case Variant.TypeNil
+		      type = SQLitePreparedStatement.SQLITE_NULL
+		    case Variant.TypeString, Variant.TypeText
+		      type = SQLitePreparedStatement.SQLITE_TEXT
+		    case else
+		      type = SQLitePreparedStatement.SQLITE_BLOB
+		    end select
+		    
+		  case DBTypes.MySQL
+		    select case value.Type
+		    case Variant.TypeBoolean
+		      value = if( value.BooleanValue, 1, 0 )
+		      type = MySQLPreparedStatement.MYSQL_TYPE_TINY
+		    case Variant.TypeDate
+		      type = MySQLPreparedStatement.MYSQL_TYPE_DATETIME
+		    case Variant.TypeDouble, Variant.TypeSingle
+		      type = MySQLPreparedStatement.MYSQL_TYPE_DOUBLE
+		    case Variant.TypeInt64
+		      type = MySQLPreparedStatement.MYSQL_TYPE_LONGLONG
+		    case Variant.TypeInt32, Variant.TypeInteger
+		      type = MySQLPreparedStatement.MYSQL_TYPE_LONG
+		    case Variant.TypeNil
+		      type = MySQLPreparedStatement.MYSQL_TYPE_NULL
+		    case Variant.TypeString, Variant.TypeText
+		      type = MySQLPreparedStatement.MYSQL_TYPE_STRING
+		    case else
+		      type = MySQLPreparedStatement.MYSQL_TYPE_BLOB
+		    end select
+		    
+		  case DBTypes.MSSQL
+		    select case value.Type
+		    case Variant.TypeBoolean
+		      value = if( value.BooleanValue, 1, 0 )
+		      type = MSSQLServerPreparedStatement.MSSQLSERVER_TYPE_TINYINT
+		    case Variant.TypeDate
+		      type = MSSQLServerPreparedStatement.MSSQLSERVER_TYPE_DATETIME
+		    case Variant.TypeDouble, Variant.TypeSingle
+		      type = MSSQLServerPreparedStatement.MSSQLSERVER_TYPE_DOUBLE
+		    case Variant.TypeInt64
+		      type = MSSQLServerPreparedStatement.MSSQLSERVER_TYPE_BIGINT
+		    case Variant.TypeInt32, Variant.TypeInteger
+		      type = MSSQLServerPreparedStatement.MSSQLSERVER_TYPE_INT
+		    case Variant.TypeNil
+		      type = MSSQLServerPreparedStatement.MSSQLSERVER_TYPE_NULL
+		    case Variant.TypeString, Variant.TypeText
+		      type = MSSQLServerPreparedStatement.MSSQLSERVER_TYPE_STRING
+		    case else
+		      type = MSSQLServerPreparedStatement.MSSQLSERVER_TYPE_BINARY
+		    end select
+		    
+		  case DBTypes.PostgreSQL
+		    //
+		    // Do nothing
+		    //
+		    
+		  case DBTypes.ODBC
+		    raise new SQLBuilder_MTC.SQLBuilderException( "ODBCDatabase is not yet supported", CurrentMethodName )
+		    
+		  case DBTypes.Oracle
+		    raise new SQLBuilder_MTC.SQLBuilderException( "OracleDatabase is not yet supported", CurrentMethodName )
+		    
+		  end select
+		  
+		  ps.Bind index, value
+		  if type <> kNoType then
+		    ps.BindType index, type
+		  end if
+		  
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
 		Private Sub BuildFromClause(indent As String, stringBuilder() As String, values() As Variant)
 		  if FromParams.Ubound = -1 then
 		    return
@@ -1204,19 +1304,16 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 
 	#tag Method, Flags = &h0
 		Function Prepare(db As Database) As PreparedSQLStatement
-		  dim values() as variant
-		  dim phType as SQLBuilder_MTC.PHTypes = SQLBuilder_MTC.PHTypeOfDatabase( db )
+		  dim dbType as DBTypes = DBTypeOfDatabase( db )
+		  dim phType as SQLBuilder_MTC.PHTypes = SQLBuilder_MTC.PHTypeOfDatabase( dbType )
 		  
+		  dim values() as variant
 		  dim sql as string = ToString( phType, values )
 		  
 		  dim ps as PreparedSQLStatement = db.Prepare( sql )
 		  for i as integer = 0 to values.Ubound
 		    dim v as variant = values( i )
-		    ps.Bind i, v
-		    if not ( db isa PostgreSQLDatabase ) then
-		      dim bindType as integer = ValueToBindType( v, db )
-		      ps.BindType i, bindType
-		    end if
+		    BindValue ps, i, v, dbType
 		  next
 		  
 		  return ps
@@ -1371,89 +1468,6 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		    result.Append kSQLPlaceholder
 		  next
 		  return result
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Function ValueToBindType(ByRef value As Variant, db As Database) As Integer
-		  dim type as integer = -1
-		  
-		  select case db
-		  case isa Date // Nonsense needed for the compiler
-		    
-		    #if SBSettings_MTC.kIncludeSQLite
-		  case isa SQLiteDatabase
-		    select case value.Type
-		    case Variant.TypeBoolean
-		      type = SQLitePreparedStatement.SQLITE_BOOLEAN
-		    case Variant.TypeDate
-		      value = value.DateValue.SQLDateTime
-		      type = SQLitePreparedStatement.SQLITE_TEXT
-		    case Variant.TypeDouble, Variant.TypeSingle
-		      type = SQLitePreparedStatement.SQLITE_DOUBLE
-		    case Variant.TypeInt64, Variant.TypeInt32, Variant.TypeInteger
-		      type = SQLitePreparedStatement.SQLITE_INTEGER
-		    case Variant.TypeNil
-		      type = SQLitePreparedStatement.SQLITE_NULL
-		    case Variant.TypeString, Variant.TypeText
-		      type = SQLitePreparedStatement.SQLITE_TEXT
-		    case else
-		      type = SQLitePreparedStatement.SQLITE_BLOB
-		    end select
-		    #endif
-		    
-		    #if SBSettings_MTC.kIncludeMySQL
-		  case isa MySQLCommunityServer
-		    select case value.Type
-		    case Variant.TypeBoolean
-		      value = if( value.BooleanValue, 1, 0 )
-		      type = MySQLPreparedStatement.MYSQL_TYPE_TINY
-		    case Variant.TypeDate
-		      type = MySQLPreparedStatement.MYSQL_TYPE_DATETIME
-		    case Variant.TypeDouble, Variant.TypeSingle
-		      type = MySQLPreparedStatement.MYSQL_TYPE_DOUBLE
-		    case Variant.TypeInt64
-		      type = MySQLPreparedStatement.MYSQL_TYPE_LONGLONG
-		    case Variant.TypeInt32, Variant.TypeInteger
-		      type = MySQLPreparedStatement.MYSQL_TYPE_LONG
-		    case Variant.TypeNil
-		      type = MySQLPreparedStatement.MYSQL_TYPE_NULL
-		    case Variant.TypeString, Variant.TypeText
-		      type = MySQLPreparedStatement.MYSQL_TYPE_STRING
-		    case else
-		      type = MySQLPreparedStatement.MYSQL_TYPE_BLOB
-		    end select
-		    #endif
-		    
-		    #if SBSettings_MTC.kIncludeMSSQL
-		  case isa MSSQLServerDatabase
-		    raise new SQLBuilder_MTC.SQLBuilderException( "MSSQLServerDatabase is not yet supported", CurrentMethodName )
-		    #endif
-		    
-		    #if SBSettings_MTC.kIncludePostgreSQL
-		  case isa PostgreSQLDatabase
-		    //
-		    // Do nothing
-		    //
-		    #endif
-		    
-		    #if SBSettings_MTC.kIncludeODBC
-		  case isa ODBCDatabase
-		    raise new SQLBuilder_MTC.SQLBuilderException( "ODBCDatabase is not yet supported", CurrentMethodName )
-		    #endif
-		    
-		    #if SBSettings_MTC.kIncludeOracle
-		  case isa OracleDatabase
-		    raise new SQLBuilder_MTC.SQLBuilderException( "OracleDatabase is not yet supported", CurrentMethodName )
-		    #endif
-		    
-		  case else
-		    raise new SQLBuilder_MTC.SQLBuilderException( _
-		    "Unrecognized database type (perhaps it's been disabled in SBSettings?)", CurrentMethodName )
-		    
-		  end select
-		  
-		  return type
 		End Function
 	#tag EndMethod
 

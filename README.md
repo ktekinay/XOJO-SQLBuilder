@@ -25,11 +25,11 @@ Even though I've endeavored for maximum flexibility, there are some situations w
 
 There is only limited error checking so it you want to do something that makes no sense at all, this module won't try to stop you.
 
-Some databases are not yet supported (Oracle, ODBC, and MSSQL).
+Some databases are not yet supported (Oracle and ODBC).
 
 ## How To Use It
 
-Open the included project and copy the **SQLBuilder\_MTC** and **SBSettings\_MTC** modules into your project. The latter is so you can easily turn off databases that you do not want compiled into your project and it is separate so you can update the main module later without touching those settings.
+Open the included project and copy the **SQLBuilder\_MTC** module into your project.
 
 To construct SQL, you can either instantiate a new `SQLBuilder_MTC.Statement` or call `SQLBuilder_MTC.SQLSelect( "*" )`. Each function in the `SQLBuilder_MTC.Statement` will return itself so you can chain the calls together.
 
@@ -184,12 +184,12 @@ dim rs as RecordSet = _
 - [Group By, Having, Order By, Limit, Offset](#groupby)
 - [Union, Intersect, Except](#union)
 - [ToString, Prepare](#tostring)
-- [SQLBuilder\_MTC](#sqlbuilder_mtc)
+- [SQLBuilder\_MTC](#sqlbuildermtc)
 
 
-The **SQLBuilder_MTC** module is designed to help you with SQL construction by using auto-complete to lead you through it. For example, it wouldn't make sense to follow a FROM clause with SELECT, so you will only see what's possible. The tables describes these functions in the order they might appear in your SQL statement.
+The **SQLBuilder\_MTC** module is designed to help you with SQL construction by using auto-complete to lead you through it. For example, it wouldn't make sense to follow a FROM clause with SELECT, so you will only see what's possible. The tables describes these functions in the order they might appear in your SQL statement.
 
-_Note: Auto-complete does not work across line breaks like in the examples below._
+_Note: Prior to Xojo 2017r1.1, auto-complete does not work across line breaks like in the examples above._
 
 ### With
 
@@ -271,7 +271,7 @@ Once the statement is complete, you will want to do something with it. These fun
 
 _Note: The `PHTypes` enum will let you specify a placeholder type if you don't have a database instance handy and just want to view the statement as a string._
 
-### SQLBuilder\_MTC
+### <a name="sqlbuildermtc"></a>SQLBuilder\_MTC
 
 As a convenience, you can initiate most statements directly from the module so you do not have to create a separate `Statement` object. The module functions include the SQLWith, SQLSelect, Where, and Conditional Where clauses.
 

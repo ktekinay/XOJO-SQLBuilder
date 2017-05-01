@@ -105,15 +105,73 @@ Protected Module SQLBuilder_MTC
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h21
+		Private Function DBTypeOfDatabase(db As Database) As DBTypes
+		  // The original code looked like this:
+		  //
+		  //  select case db
+		  //  case isa SQLiteDatabase
+		  //
+		  // Instead, I now use Introspection. Why? The original code would load
+		  // the various database plugins into the project even though the actual
+		  // features of those databases aren't needed here. To avoid that, I had
+		  // to resort to pragmas, which demanded a separte "preferences" module.
+		  //
+		  // By using Introspection and looking for the database engine in the name
+		  // of the object, a marker I don't expect to change even if the overall
+		  // class name does, I can achieve the same results without loading the 
+		  // plugins or using pragmas.
+		  
+		  dim type as DBTypes = DBTypes.Unknown
+		  
+		  dim className as string = Introspection.GetType( db ).Name
+		  
+		  select case true
+		  case className.InStr( "SQLite" ) <> 0
+		    type = DBTypes.SQLite
+		    
+		  case className.InStr( "Postgre" ) <> 0
+		    type = DBTypes.PostgreSQL
+		    
+		  case className.InStr( "MySQL" ) <> 0
+		    type = DBTypes.MySQL
+		    
+		  case className.InStr( "MSSQL" ) <> 0
+		    type = DBTypes.MSSQL
+		    
+		  case className.InStr( "Oracle" ) <> 0
+		    type = DBTypes.Oracle
+		    
+		  case className.InStr( "ODBC" ) <> 0
+		    type = DBTypes.ODBC
+		    
+		  case else
+		    raise new SQLBuilder_MTC.SQLBuilderException( _
+		    "Unrecognized database type: " + className, CurrentMethodName )
+		    
+		  end select
+		  
+		  return type
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h1
 		Protected Function PHTypeOfDatabase(db As Database) As SQLBuilder_MTC.PHTypes
+		  dim dbType as DBTypes = DBTypeOfDatabase( db )
+		  return PHTypeOfDatabase( dbType )
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function PHTypeOfDatabase(dbType As DBTypes) As PHTypes
 		  dim phType as SQLBuilder_MTC.PHTypes = SQLBuilder_MTC.PHTypes.QuestionMark
 		  
-		  select case db
-		  case isa SQLiteDatabase,isa  MySQLCommunityServer, isa MSSQLServerDatabase
+		  select case dbType
+		  case DBTypes.SQLite, DBTypes.MySQL, DBTypes.MSSQL
 		    phType = SQLBuilder_MTC.PHTypes.QuestionMark
 		    
-		  case isa PostgreSQLDatabase
+		  case DBTypes.PostgreSQL
 		    phType = SQLBuilder_MTC.PHTypes.DollarSignNumber
 		    
 		  end select
@@ -256,6 +314,16 @@ Protected Module SQLBuilder_MTC
 	#tag Constant, Name = kVersion, Type = String, Dynamic = False, Default = \"1.0", Scope = Protected
 	#tag EndConstant
 
+
+	#tag Enum, Name = DBTypes, Flags = &h21
+		Unknown = 0
+		  SQLite
+		  MySQL
+		  PostgreSQL
+		  MSSQL
+		  Oracle
+		ODBC
+	#tag EndEnum
 
 	#tag Enum, Name = PHTypes, Type = Integer, Flags = &h1
 		QuestionMark

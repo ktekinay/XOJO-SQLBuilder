@@ -243,6 +243,16 @@ Inherits TestGroup
 		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhere( false, "i", 2 ).CondOrWhere( true, "a", 3 ).ToString
 		  expecteds.Append "SELECT * FROM table WHERE a = ?"
 		  
+		  actuals.Append _
+		  SQLBuilder_MTC.SQLSelect( "" ) _
+		  .From( "table" ) _
+		  .CondWhere( false, "a", 1 ) _
+		  .CondWhere( true, "b", 2 ) _ 
+		  .CondWhere( false, "c", 3 ) _
+		  .CondWhere( true, "d", 4 ) _
+		  .ToString( SQLBuilder_MTC.PHTypes.DollarSignNumber )
+		  expecteds.Append "SELECT * FROM table WHERE b = $1 AND d = $2"
+		  
 		  AssertEqualness expecteds, actuals
 		End Sub
 	#tag EndMethod
@@ -713,15 +723,22 @@ Inherits TestGroup
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub ReplaceHoldersTest()
+		Sub ReplacePlaceholdersTest()
 		  dim sb as new SQLBuilder_MTC.Statement
 		  dim ut as SQLBuilder_MTC.UnitTestInterface = sb
 		  
 		  dim sql as string = """some string?"" = ? and 'another string?' = ?"
 		  dim expected as string = """some string?"" = $1 and 'another string?' = $2"
-		  
 		  dim actual as string = ut.ReplacePlaceHolders( sql, SQLBuilder_MTC.PHTypes.DollarSignNumber )
+		  Assert.AreEqual expected, actual
 		  
+		  sql = "a = ? and b = ?"
+		  expected = "a = ?1 and b = ?2"
+		  actual = ut.ReplacePlaceHolders( sql, SQLBuilder_MTC.PHTypes.QuestionMarkNumber )
+		  Assert.AreEqual expected, actual
+		  
+		  expected = "a = :1 and b = :2"
+		  actual = ut.ReplacePlaceHolders( sql, SQLBuilder_MTC.PHTypes.ColonName )
 		  Assert.AreEqual expected, actual
 		End Sub
 	#tag EndMethod
@@ -747,6 +764,7 @@ Inherits TestGroup
 		  expecteds.Append "SELECT a = $1"
 		  
 		  AssertEqualness expecteds, actuals
+		  
 		End Sub
 	#tag EndMethod
 
