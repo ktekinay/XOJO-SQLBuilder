@@ -306,5 +306,5 @@ This project was designed and implemented by:
 
 ## <a name="releasenotes"></a>Release Notes
 
-**1.0** (April __, 2017)
+**1.0** (May 1, 2017)
 - Initial release.
