@@ -110,6 +110,10 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		    dim c as currency = value.CurrencyValue
 		    dim d as double = c
 		    value = d
+		  elseif value.Type = Variant.TypeText then
+		    dim t as text = value.TextValue
+		    dim s as string = t
+		    value = s
 		  end if
 		  
 		  const kNoType = -9999
@@ -131,7 +135,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		      type = SQLitePreparedStatement.SQLITE_INTEGER
 		    case Variant.TypeNil
 		      type = SQLitePreparedStatement.SQLITE_NULL
-		    case Variant.TypeString, Variant.TypeText
+		    case Variant.TypeString
 		      type = SQLitePreparedStatement.SQLITE_TEXT
 		    case else
 		      type = SQLitePreparedStatement.SQLITE_BLOB
@@ -152,7 +156,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		      type = MySQLPreparedStatement.MYSQL_TYPE_LONG
 		    case Variant.TypeNil
 		      type = MySQLPreparedStatement.MYSQL_TYPE_NULL
-		    case Variant.TypeString, Variant.TypeText
+		    case Variant.TypeString
 		      type = MySQLPreparedStatement.MYSQL_TYPE_STRING
 		    case else
 		      type = MySQLPreparedStatement.MYSQL_TYPE_BLOB
@@ -173,7 +177,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		      type = MSSQLServerPreparedStatement.MSSQLSERVER_TYPE_INT
 		    case Variant.TypeNil
 		      type = MSSQLServerPreparedStatement.MSSQLSERVER_TYPE_NULL
-		    case Variant.TypeString, Variant.TypeText
+		    case Variant.TypeString
 		      type = MSSQLServerPreparedStatement.MSSQLSERVER_TYPE_STRING
 		    case else
 		      type = MSSQLServerPreparedStatement.MSSQLSERVER_TYPE_BINARY
@@ -181,14 +185,52 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		    
 		  case DBTypes.PostgreSQL
 		    //
-		    // Do nothing
+		    // BindType not required
 		    //
 		    
-		  case DBTypes.ODBC
-		    raise new SQLBuilder_MTC.SQLBuilderException( "ODBCDatabase is not yet supported", CurrentMethodName )
-		    
 		  case DBTypes.Oracle
-		    raise new SQLBuilder_MTC.SQLBuilderException( "OracleDatabase is not yet supported", CurrentMethodName )
+		    select case value.Type
+		    case Variant.TypeBoolean
+		      value = if( value.BooleanValue, 1, 0 )
+		      type = OracleSQLPreparedStatement.SQL_TYPE_INTEGER
+		    case Variant.TypeDate
+		      type = OracleSQLPreparedStatement.SQL_TYPE_DATE
+		    case Variant.TypeDouble, Variant.TypeSingle
+		      type = OracleSQLPreparedStatement.SQL_TYPE_FLOAT
+		    case Variant.TypeInt64, Variant.TypeInt32, Variant.TypeInteger
+		      type = OracleSQLPreparedStatement.SQL_TYPE_INTEGER
+		    case Variant.TypeNil
+		      type = OracleSQLPreparedStatement.SQL_TYPE_NULL
+		    case Variant.TypeString
+		      type = OracleSQLPreparedStatement.SQL_TYPE_STRING
+		    case else
+		      type = OracleSQLPreparedStatement.SQL_TYPE_CLOB
+		    end select
+		    
+		  case DBTypes.ODBC
+		    select case value.Type
+		    case Variant.TypeBoolean
+		      value = if( value.BooleanValue, 1, 0 )
+		      type = ODBCPreparedStatement.ODBC_TYPE_TINYINT
+		    case Variant.TypeDate
+		      type = ODBCPreparedStatement.ODBC_TYPE_TIMESTAMP
+		    case Variant.TypeDouble, Variant.TypeSingle
+		      type = ODBCPreparedStatement.ODBC_TYPE_DOUBLE
+		    case Variant.TypeInt64
+		      type = ODBCPreparedStatement.ODBC_TYPE_BIGINT
+		    case Variant.TypeInt32, Variant.TypeInteger
+		      type = ODBCPreparedStatement.ODBC_TYPE_INTEGER
+		    case Variant.TypeNil
+		      type = ODBCPreparedStatement.ODBC_TYPE_NULL
+		    case Variant.TypeString
+		      if value.StringValue.LenB > 2000 then
+		        type = ODBCPreparedStatement.ODBC_TYPE_LONGSTRING
+		      else
+		        type = ODBCPreparedStatement.ODBC_TYPE_STRING
+		      end if
+		    case else
+		      type = ODBCPreparedStatement.ODBC_TYPE_BINARY
+		    end select
 		    
 		  end select
 		  
@@ -1359,7 +1401,10 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		        inQuote = true
 		        
 		      case SQLBuilder_MTC.kSQLPlaceholder
-		        chars( charIndex ) = placeholderPrefix + str( nextPlaceholderIndex )
+		        chars( charIndex ) = placeholderPrefix + _
+		        if(phType = SQLBuilder_MTC.PHTypes.ColonName, _
+		        "p" + format( nextPlaceholderIndex, "00000"), _
+		        str( nextPlaceholderIndex ))
 		        nextPlaceholderIndex = nextPlaceholderIndex + 1
 		        
 		      end select

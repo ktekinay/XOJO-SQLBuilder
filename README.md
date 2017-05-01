@@ -25,8 +25,6 @@ Even though I've endeavored for maximum flexibility, there are some situations w
 
 There is only limited error checking so it you want to do something that makes no sense at all, this module won't try to stop you.
 
-Some databases are not yet supported (Oracle and ODBC).
-
 ## How To Use It
 
 Open the included project and copy the **SQLBuilder\_MTC** module into your project.

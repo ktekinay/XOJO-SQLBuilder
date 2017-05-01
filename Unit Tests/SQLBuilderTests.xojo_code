@@ -737,7 +737,7 @@ Inherits TestGroup
 		  actual = ut.ReplacePlaceHolders( sql, SQLBuilder_MTC.PHTypes.QuestionMarkNumber )
 		  Assert.AreEqual expected, actual
 		  
-		  expected = "a = :1 and b = :2"
+		  expected = "a = :p00001 and b = :p00002"
 		  actual = ut.ReplacePlaceHolders( sql, SQLBuilder_MTC.PHTypes.ColonName )
 		  Assert.AreEqual expected, actual
 		End Sub

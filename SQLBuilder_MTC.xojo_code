@@ -168,11 +168,14 @@ Protected Module SQLBuilder_MTC
 		  dim phType as SQLBuilder_MTC.PHTypes = SQLBuilder_MTC.PHTypes.QuestionMark
 		  
 		  select case dbType
-		  case DBTypes.SQLite, DBTypes.MySQL, DBTypes.MSSQL
+		  case DBTypes.SQLite, DBTypes.MySQL, DBTypes.MSSQL, DBTypes.ODBC
 		    phType = SQLBuilder_MTC.PHTypes.QuestionMark
 		    
 		  case DBTypes.PostgreSQL
 		    phType = SQLBuilder_MTC.PHTypes.DollarSignNumber
+		    
+		  case DBTypes.Oracle
+		    phType = SQLBuilder_MTC.PHTypes.ColonName
 		    
 		  end select
 		  
