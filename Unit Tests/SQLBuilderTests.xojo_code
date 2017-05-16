@@ -277,6 +277,24 @@ Inherits TestGroup
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub EmptyWhereTest()
+		  dim actuals() as string
+		  dim expecteds() as string
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).CondWhere( false, "i", 3 ).ToString
+		  expecteds.Append "SELECT * FROM table"
+		  
+		  actuals.Append SQLBuilder_MTC.SQLSelect( "" ).From( "table" ).WhereRaw( "false" ) _
+		  .OrWhereNot( _
+		  SQLBuilder_MTC.CondWhere( false, "i", 4 ) _
+		  ).ToString
+		  expecteds.Append "SELECT * FROM table WHERE false"
+		  
+		  AssertEqualness expecteds, actuals
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub FromClauseTest()
 		  dim actuals() as string
 		  dim expecteds() as string
