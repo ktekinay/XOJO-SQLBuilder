@@ -314,7 +314,7 @@ Protected Module SQLBuilder_MTC
 	#tag Constant, Name = kSQLPlaceholder, Type = String, Dynamic = False, Default = \"\?", Scope = Protected
 	#tag EndConstant
 
-	#tag Constant, Name = kVersion, Type = String, Dynamic = False, Default = \"1.0", Scope = Protected
+	#tag Constant, Name = kVersion, Type = String, Dynamic = False, Default = \"1.0.1", Scope = Protected
 	#tag EndConstant
 
 

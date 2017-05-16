@@ -543,8 +543,16 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		    else
 		      stringBuilder.Append "("
 		      stringBuilder.Append EndOfLine
+		      dim startingUbound as integer = stringBuilder.Ubound
 		      subQuery.BuildSQL nextIndent, stringBuilder, values
-		      AppendLineToStringBuilder stringBuilder, indent, ")"
+		      if stringBuilder.Ubound = startingUbound then
+		        //
+		        // Nothing was added
+		        //
+		        redim stringBuilder( stringBuilder.Ubound - 2 - if( w.IsOR, 1, 0 ) - if( w.IsNot, 1, 0 ) )
+		      else
+		        AppendLineToStringBuilder stringBuilder, indent, ")"
+		      end if
 		    end if
 		    
 		  next i
