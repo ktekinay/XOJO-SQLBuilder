@@ -306,5 +306,8 @@ This project was designed and implemented by:
 
 ## <a name="releasenotes"></a>Release Notes
 
+**1.0.1** (May 16, 2017)
+- Empty WHERE subqueries will be skipped.
+
 **1.0** (May 1, 2017)
 - Initial release.
