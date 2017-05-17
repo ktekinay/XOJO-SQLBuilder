@@ -306,6 +306,9 @@ This project was designed and implemented by:
 
 ## <a name="releasenotes"></a>Release Notes
 
+**1.0.2** (____, 2017)
+- During debug, sql and values are logged to System.DebugLog.
+
 **1.0.1** (May 16, 2017)
 - Empty WHERE subqueries will be skipped.
 

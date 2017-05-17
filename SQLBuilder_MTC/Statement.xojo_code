@@ -1485,8 +1485,35 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 	#tag Method, Flags = &h0
 		Function ToString(phType As SQLBuilder_MTC.PHTypes = SQLBuilder_MTC.PHTypes.QuestionMark) As String
 		  dim values() as variant
-		  return ToString( phType, values )
+		  dim sql as string = ToString( phType, values )
 		  
+		  #if DebugBuild then
+		    dim valueStrings() as string
+		    for i as integer = 0 to values.Ubound
+		      if values( i ).Type = Variant.TypeString then
+		        valueStrings.Append """" + values( i ).StringValue + """"
+		      elseif values( i ).Type = Variant.TypeText then
+		        valueStrings.Append """" + values( i ).TextValue + """"
+		      else
+		        valueStrings.Append values( i ).StringValue
+		      end if
+		    next
+		    
+		    dim logger as string = _
+		    CurrentMethodName + ":" + EndOfLine + _
+		    sql 
+		    if valueStrings.Ubound <> -1 then
+		      logger = logger + _
+		      EndOfLine + _
+		      "Values: {" + EndOfLine + "  " + _
+		      join( valueStrings, "," + EndOfLine + " " ) + EndOfLine + _
+		      "}"
+		    end if
+		    
+		    System.DebugLog logger
+		  #endif
+		  
+		  return sql
 		End Function
 	#tag EndMethod
 
