@@ -186,7 +186,16 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		  case DBTypes.PostgreSQL
 		    //
 		    // BindType not required
+		    // but we might have to adjust the value
 		    //
+		    select case value.Type
+		    case Variant.TypeDouble, Variant.TypeSingle
+		      //
+		      // Bypass Xojo bug where commas are inserted into doubles >= 1000.0
+		      //
+		      value = format( value.DoubleValue, "-0.0###############" )
+		      
+		    end select
 		    
 		  case DBTypes.Oracle
 		    select case value.Type

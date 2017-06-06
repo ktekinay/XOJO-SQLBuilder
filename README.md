@@ -308,6 +308,7 @@ This project was designed and implemented by:
 
 **1.0.2** (____, 2017)
 - During debug, sql and values are logged to System.DebugLog.
+- When values are bound, doubles are converted to strings with PostgreSQL databases. (Bypasses a bug in Xojo.)
 
 **1.0.1** (May 16, 2017)
 - Empty WHERE subqueries will be skipped.

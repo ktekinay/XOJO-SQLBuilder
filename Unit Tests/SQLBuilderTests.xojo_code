@@ -331,6 +331,26 @@ Inherits TestGroup
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
+		Private Function GetPostgreSQLDatabase() As PostgreSQLDatabase
+		  //
+		  // Requires a "unittests" PostgreSQLDatabase available
+		  // on localhost
+		  //
+		  
+		  dim db as new PostgreSQLDatabase
+		  db.DatabaseName = "unittests"
+		  db.UserName = db.DatabaseName
+		  db.Password = db.DatabaseName
+		  
+		  if not db.Connect then
+		    raise new RuntimeException
+		  end if
+		  
+		  return db
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
 		Private Function GetSQLiteDatabase() As SQLiteDatabase
 		  dim db as new SQLiteDatabase
 		  db.DatabaseName = "SQLBuilder_MTC_Tests"
@@ -707,6 +727,47 @@ Inherits TestGroup
 		  "ORDER BY" + EndOfLine + _
 		  "  a.id" + EndOfLine
 		  Assert.AreEqual expected, actual
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub PostgreSQLDoubleTest()
+		  self.StopTestOnFail = true
+		  
+		  dim db as Database
+		  #pragma BreakOnExceptions false
+		  try
+		    db = GetPostgreSQLDatabase
+		  catch err as RuntimeException
+		    if err isa EndException or err isa ThreadEndException then
+		      raise err
+		    end if
+		    
+		    //
+		    // We'll skip this test
+		    //
+		    return
+		  end
+		  #pragma BreakOnExceptions default
+		  
+		  dim d as double = -12345789.6789
+		  db.SQLExecute "BEGIN"
+		  
+		  dim sql as string = "CREATE TABLE tester (d NUMERIC(12,2)); INSERT INTO tester (d) VALUES (?)"
+		  sql = sql.Replace( "?", format( d, "-0.0######" ) )
+		  db.SQLExecute sql
+		  Assert.IsFalse db.Error, db.ErrorMessage.ToText
+		  
+		  dim rs as RecordSet = SQLBuilder_MTC _
+		  .SQLSelect( "d" ) _
+		  .From( "tester" ) _
+		  .WhereRaw( "d BETWEEN SYMMETRIC ? AND ?", d - 1.0, d + 1.0 ) _
+		  .Prepare( db ).SQLSelect
+		  
+		  Assert.IsFalse db.Error, db.ErrorMessage.ToText
+		  Assert.AreEqual 1, rs.RecordCount, "RecordCount did not match"
+		  
+		  db.Rollback
 		End Sub
 	#tag EndMethod
 
