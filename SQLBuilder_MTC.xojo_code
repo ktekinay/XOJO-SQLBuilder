@@ -127,23 +127,39 @@ Protected Module SQLBuilder_MTC
 		  dim className as string = Introspection.GetType( db ).Name
 		  
 		  select case true
+		  case false
+		    //
+		    // Placeholder
+		    //
+		    #if kRecognizeSQLite then
 		  case className.InStr( "SQLite" ) <> 0
 		    type = DBTypes.SQLite
+		    #endif
 		    
+		    #if kRecognizePostgreSQL then
 		  case className.InStr( "Postgre" ) <> 0
 		    type = DBTypes.PostgreSQL
+		    #endif
 		    
+		    #if kRecognizeMySQL then
 		  case className.InStr( "MySQL" ) <> 0
 		    type = DBTypes.MySQL
+		    #endif
 		    
+		    #if kRecognizeMSSQL then
 		  case className.InStr( "MSSQL" ) <> 0
 		    type = DBTypes.MSSQL
+		    #endif
 		    
+		    #if kRecognizeOracle then
 		  case className.InStr( "Oracle" ) <> 0
 		    type = DBTypes.Oracle
+		    #endif
 		    
+		    #if kRecognizeODBC then
 		  case className.InStr( "ODBC" ) <> 0
 		    type = DBTypes.ODBC
+		    #endif
 		    
 		  case else
 		    raise new SQLBuilder_MTC.SQLBuilderException( _
@@ -311,6 +327,24 @@ Protected Module SQLBuilder_MTC
 	#tag EndMethod
 
 
+	#tag Constant, Name = kRecognizeMSSQL, Type = Boolean, Dynamic = False, Default = \"True", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = kRecognizeMySQL, Type = Boolean, Dynamic = False, Default = \"True", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = kRecognizeODBC, Type = Boolean, Dynamic = False, Default = \"True", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = kRecognizeOracle, Type = Boolean, Dynamic = False, Default = \"True", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = kRecognizePostgreSQL, Type = Boolean, Dynamic = False, Default = \"True", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = kRecognizeSQLite, Type = Boolean, Dynamic = False, Default = \"True", Scope = Protected
+	#tag EndConstant
+
 	#tag Constant, Name = kSQLPlaceholder, Type = String, Dynamic = False, Default = \"\?", Scope = Protected
 	#tag EndConstant
 
@@ -343,6 +377,7 @@ Protected Module SQLBuilder_MTC
 			Group="ID"
 			InitialValue="-2147483648"
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Left"
@@ -350,18 +385,23 @@ Protected Module SQLBuilder_MTC
 			Group="Position"
 			InitialValue="0"
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Name"
 			Visible=true
 			Group="ID"
+			InitialValue=""
 			Type="String"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"
 			Visible=true
 			Group="ID"
+			InitialValue=""
 			Type="String"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Top"
@@ -369,6 +409,7 @@ Protected Module SQLBuilder_MTC
 			Group="Position"
 			InitialValue="0"
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Module

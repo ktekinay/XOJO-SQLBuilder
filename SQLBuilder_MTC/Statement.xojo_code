@@ -121,7 +121,12 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		  dim type as integer = kNoType
 		  
 		  select case dbType
+		  case dbTypes.Unknown
+		    //
+		    // A placeholder, really
+		    //
 		    
+		    #if kRecognizeSQLite then
 		  case dbTypes.SQLite
 		    select case value.Type
 		    case Variant.TypeBoolean
@@ -140,7 +145,9 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		    case else
 		      type = SQLitePreparedStatement.SQLITE_BLOB
 		    end select
+		    #endif
 		    
+		    #if kRecognizeMySQL then
 		  case DBTypes.MySQL
 		    select case value.Type
 		    case Variant.TypeBoolean
@@ -161,7 +168,9 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		    case else
 		      type = MySQLPreparedStatement.MYSQL_TYPE_BLOB
 		    end select
+		    #endif
 		    
+		    #if kRecognizeMSSQL then
 		  case DBTypes.MSSQL
 		    select case value.Type
 		    case Variant.TypeBoolean
@@ -182,7 +191,9 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		    case else
 		      type = MSSQLServerPreparedStatement.MSSQLSERVER_TYPE_BINARY
 		    end select
+		    #endif
 		    
+		    #if kRecognizePostgreSQL then
 		  case DBTypes.PostgreSQL
 		    //
 		    // BindType not required
@@ -196,7 +207,9 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		      value = format( value.DoubleValue, "-0.0###############" )
 		      
 		    end select
+		    #endif
 		    
+		    #if kRecognizeOracle then
 		  case DBTypes.Oracle
 		    select case value.Type
 		    case Variant.TypeBoolean
@@ -215,7 +228,9 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		    case else
 		      type = OracleSQLPreparedStatement.SQL_TYPE_CLOB
 		    end select
+		    #endif
 		    
+		    #if kRecognizeODBC then
 		  case DBTypes.ODBC
 		    select case value.Type
 		    case Variant.TypeBoolean
@@ -240,6 +255,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 		    case else
 		      type = ODBCPreparedStatement.ODBC_TYPE_BINARY
 		    end select
+		    #endif
 		    
 		  end select
 		  
@@ -1835,6 +1851,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 			Group="ID"
 			InitialValue="-2147483648"
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Left"
@@ -1842,16 +1859,21 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 			Group="Position"
 			InitialValue="0"
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Name"
 			Visible=true
 			Group="ID"
+			InitialValue=""
 			Type="String"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="StringValue"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="String"
 			EditorType="MultiLineEditor"
 		#tag EndViewProperty
@@ -1859,7 +1881,9 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 			Name="Super"
 			Visible=true
 			Group="ID"
+			InitialValue=""
 			Type="String"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Top"
@@ -1867,6 +1891,7 @@ Implements WhereClause,SelectClause,FromClause,AdditionalClause,UnitTestInterfac
 			Group="Position"
 			InitialValue="0"
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Class
