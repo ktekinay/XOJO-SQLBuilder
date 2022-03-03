@@ -407,7 +407,8 @@ Inherits TestGroup
 		  if true then
 		    dim arr() as boolean
 		    arr.Append true
-		    dim type as text = Xojo.Introspection.GetType( arr ).Name
+		    var ti as Xojo.Introspection.TypeInfo = Xojo.Introspection.GetType( arr )
+		    dim type as string = ti.Name
 		    redim step1( -1 )
 		    step1.Append arr
 		    actual = ut.GetTrueValues( values )
@@ -418,7 +419,8 @@ Inherits TestGroup
 		  if true then
 		    dim arr() as text
 		    arr.Append "hi"
-		    dim type as text = Xojo.Introspection.GetType( arr ).Name
+		    var ti as Xojo.Introspection.TypeInfo = Xojo.Introspection.GetType( arr )
+		    dim type as string = ti.Name
 		    redim step1( -1 )
 		    step1.Append arr
 		    actual = ut.GetTrueValues( values )
@@ -429,7 +431,8 @@ Inherits TestGroup
 		  if true then
 		    dim arr() as string
 		    arr.Append "hi"
-		    dim type as text = Xojo.Introspection.GetType( arr ).Name
+		    var ti as Xojo.Introspection.TypeInfo = Xojo.Introspection.GetType( arr )
+		    dim type as string = ti.Name
 		    redim step1( -1 )
 		    step1.Append arr
 		    actual = ut.GetTrueValues( values )
@@ -440,7 +443,8 @@ Inherits TestGroup
 		  if true then
 		    dim arr() as Int32
 		    arr.Append 456
-		    dim type as text = Xojo.Introspection.GetType( arr ).Name
+		    var ti as Xojo.Introspection.TypeInfo = Xojo.Introspection.GetType( arr )
+		    dim type as string = ti.Name
 		    redim step1( -1 )
 		    step1.Append arr
 		    actual = ut.GetTrueValues( values )
@@ -451,7 +455,8 @@ Inherits TestGroup
 		  if true then
 		    dim arr() as Int64
 		    arr.Append 456
-		    dim type as text = Xojo.Introspection.GetType( arr ).Name
+		    var ti as Xojo.Introspection.TypeInfo = Xojo.Introspection.GetType( arr )
+		    dim type as string = ti.Name
 		    redim step1( -1 )
 		    step1.Append arr
 		    actual = ut.GetTrueValues( values )
@@ -462,7 +467,8 @@ Inherits TestGroup
 		  if true then
 		    dim arr() as Double
 		    arr.Append 332.123
-		    dim type as text = Xojo.Introspection.GetType( arr ).Name
+		    var ti as Xojo.Introspection.TypeInfo = Xojo.Introspection.GetType( arr )
+		    dim type as string = ti.Name
 		    redim step1( -1 )
 		    step1.Append arr
 		    actual = ut.GetTrueValues( values )
@@ -474,7 +480,8 @@ Inherits TestGroup
 		    dim arr() as Single
 		    arr.Append 332.123
 		    dim expectedDouble as double = arr( 0 )
-		    dim type as text = Xojo.Introspection.GetType( arr ).Name
+		    var ti as Xojo.Introspection.TypeInfo = Xojo.Introspection.GetType( arr )
+		    dim type as string = ti.Name
 		    redim step1( -1 )
 		    step1.Append arr
 		    actual = ut.GetTrueValues( values )
@@ -485,7 +492,8 @@ Inherits TestGroup
 		  if true then
 		    dim arr() as Currency
 		    arr.Append 332.123
-		    dim type as text = Xojo.Introspection.GetType( arr ).Name
+		    var ti as Xojo.Introspection.TypeInfo = Xojo.Introspection.GetType( arr )
+		    dim type as string = ti.Name
 		    redim step1( -1 )
 		    step1.Append arr
 		    actual = ut.GetTrueValues( values )
@@ -496,7 +504,8 @@ Inherits TestGroup
 		  if true then
 		    dim arr() as Date
 		    arr.Append new Date
-		    dim type as text = Xojo.Introspection.GetType( arr ).Name
+		    var ti as Xojo.Introspection.TypeInfo = Xojo.Introspection.GetType( arr )
+		    dim type as string = ti.Name
 		    redim step1( -1 )
 		    step1.Append arr
 		    actual = ut.GetTrueValues( values )
@@ -507,7 +516,8 @@ Inherits TestGroup
 		  if true then
 		    dim arr() as Xojo.Core.Date
 		    arr.Append Xojo.Core.Date.Now
-		    dim type as text = Xojo.Introspection.GetType( arr ).Name
+		    var ti as Xojo.Introspection.TypeInfo = Xojo.Introspection.GetType( arr )
+		    dim type as string = ti.Name
 		    redim step1( -1 )
 		    step1.Append arr
 		    actual = ut.GetTrueValues( values )

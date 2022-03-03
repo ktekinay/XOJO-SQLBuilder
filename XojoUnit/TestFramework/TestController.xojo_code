@@ -2,55 +2,53 @@
 Protected Class TestController
 	#tag Method, Flags = &h0
 		Sub AddGroup(group As TestGroup)
-		  mTestGroups.Append(group)
+		  mTestGroups.Add(group)
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
-		Private Sub EndTimer()
-		  mDuration = (Microseconds-mTimer) / 1000000
-		  
+		Private Sub CalculateDuration()
+		  mFinishMS = System.Microseconds
 		  
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0, CompatibilityFlags = (not TargetHasGUI and not TargetWeb and not TargetIOS) or  (TargetWeb) or  (TargetHasGUI)
-		Sub ExportTestResults(filePath As Text)
+		Sub ExportTestResults(filePath As String)
 		  //
 		  // Conforms to JUnit XML schema, found here:
 		  //
 		  // http://www.ibm.com/support/knowledgecenter/SSQ2R2_9.5.1/com.ibm.rsar.analysis.codereview.cobol.doc/topics/cac_useresults_junit.html
 		  //
 		  
-		  #If TargetWin32 Then
-		    Const kEOL As Text = &u0D + &u0A
+		  #If TargetWindows Then
+		    Const kEOL As String = &u0D + &u0A
 		  #Else
-		    Const kEOL As Text = &u0A
+		    Const kEOL As String = &u0A
 		  #Endif
 		  
-		  Dim testId As Text = Xojo.Core.Date.Now.ToText + "." + Xojo.Core.Date.Now.Nanosecond.ToText
+		  Var now As DateTime = DateTime.Now
+		  Var testId As String = now.SQLDateTime + "." + now.Nanosecond.ToString
 		  
-		  Dim f As FolderItem
-		  f = New FolderItem(filePath, FolderItem.PathTypeShell)
-		  Dim stream As BinaryStream
-		  If f <> Nil Then
-		    stream=BinaryStream.Create(f, True)
+		  Var f As New FolderItem(filePath, FolderItem.PathModes.Shell)
+		  If f IsA Object Then
+		    Var stream As BinaryStream = BinaryStream.Create(f, True)
 		    stream.Write "<?xml version=""1.0"" encoding=""UTF-8"" ?>" + kEOL
 		    stream.Write "<testsuites id=""" + testId + _
-		    """ tests=""" + RunTestCount.ToText + _
-		    """ failures=""" + FailedCount.ToText + _
-		    """ time=""" + Duration.ToText + """>" + kEOL
+		    """ tests=""" + RunTestCount.ToString + _
+		    """ failures=""" + FailedCount.ToString + _
+		    """ time=""" + Duration.ToString + """>" + kEOL
 		    
 		    For Each tg As TestGroup In mTestGroups
-		      stream.Write "  <testsuite errors=""0"" skipped=""" + tg.SkippedTestCount.ToText + _
-		      """ tests=""" + tg.TestCount.ToText + _
-		      """ time=""" + tg.Duration.ToText + _
-		      """ failures=""" + tg.FailedTestCount.ToText + _
+		      stream.Write "  <testsuite errors=""0"" skipped=""" + tg.SkippedTestCount.ToString + _
+		      """ tests=""" + tg.TestCount.ToString + _
+		      """ time=""" + tg.Duration.ToString + _
+		      """ failures=""" + tg.FailedTestCount.ToString + _
 		      """ name=""com.atlassian.bamboo.labels." + tg.Name + """>" + kEOL
 		      
 		      For Each tr As TestResult In tg.Results
-		        stream.Write "    <testcase name=""" + tr.TestName + """ time=""" + tr.Duration.ToText + _
-		        """ duration= """ + tr.Duration.ToText + """>" + kEOL // "time" is right, but "duration" is maintained for backwards compatibility
+		        stream.Write "    <testcase name=""" + tr.TestName + """ time=""" + tr.Duration.ToString + _
+		        """ duration= """ + tr.Duration.ToString + """>" + kEOL // "time" is right, but "duration" is maintained for backwards compatibility
 		        
 		        If tr.Result = TestResult.Skipped Then
 		          stream.Write "       <skipped />" + EndOfLine
@@ -59,7 +57,7 @@ Protected Class TestController
 		          stream.Write "       <not_implemented />" + EndOfLine
 		          
 		        ElseIf tr.Result = TestResult.Failed Then
-		          Dim failMessage As Text = tr.Message
+		          Var failMessage As String = tr.Message
 		          failMessage = failMessage.ReplaceAll("<", "&lt;")
 		          failMessage = failMessage.ReplaceAll(">", "&gt;")
 		          stream.Write "       <failure type=""xojo.AssertionFailedError"" message=""" + failMessage + """/>" + kEOL
@@ -73,7 +71,7 @@ Protected Class TestController
 		    
 		    stream.Write "</testsuites>" + kEOL
 		    stream.Close
-		  End if
+		  End If
 		  
 		End Sub
 	#tag EndMethod
@@ -93,28 +91,41 @@ Protected Class TestController
 		  //  "*.Some" = Match the method named "SomeTest" in any group ("Test" is optional)
 		  //  "My*Group" = Match any group that starts with "My" and ends with "Group"
 		  
+		  //
+		  // Replace Nil with an empty array
+		  //
+		  If True Then // Scope
+		    Var emptyArr() As String
+		    
+		    If includePatterns Is Nil Then
+		      includePatterns = emptyArr
+		    End If
+		    If excludePatterns Is Nil Then
+		      excludePatterns = emptyArr
+		    End If
+		  End If
 		  
-		  If includePatterns.Ubound = -1 And excludePatterns.Ubound = -1 Then
-		    Dim err As New RuntimeException
+		  If includePatterns.LastIndex = -1 And excludePatterns.LastIndex = -1 Then
+		    Var err As New RuntimeException
 		    err.Message = "You must specify at least one include or exclude pattern"
 		    Raise err
-		  End if
+		  End If
 		  
 		  //
 		  // Convert the patterns into regular expressions
 		  //
-		  For i As Integer = 0 To includePatterns.Ubound
+		  For i As Integer = 0 To includePatterns.LastIndex
 		    includePatterns(i) = SimplePatternToRegExPattern(includePatterns(i))
 		  Next i
 		  
-		  For i As Integer = 0 To excludePatterns.Ubound
+		  For i As Integer = 0 To excludePatterns.LastIndex
 		    excludePatterns(i) = SimplePatternToRegExPattern(excludePatterns(i))
 		  Next i
 		  
 		  //
 		  // Set up the RegEx
 		  //
-		  Dim rx As New RegEx
+		  Var rx As New RegEx
 		  
 		  //
 		  // Process includes
@@ -123,20 +134,20 @@ Protected Class TestController
 		    //
 		    // Turn all methods on and the group on/off
 		    //
-		    group.IncludeGroup = (includePatterns.Ubound = -1) // If there are any includes, default to False
+		    group.IncludeGroup = (includePatterns.LastIndex = -1) // If there are any includes, default to False
 		    group.SetIncludeMethods(True)
-		    Dim methodsTurnedOff As Boolean
+		    Var methodsTurnedOff As Boolean
 		    
 		    For Each pattern As String In includePatterns
 		      rx.SearchPattern = pattern
-		      Dim hasDot As Boolean = PatternHasDot(pattern)
+		      Var hasDot As Boolean = PatternHasDot(pattern)
 		      
 		      //
 		      // See if this pattern matches any methods
 		      //
 		      If hasDot Then
 		        For Each result As TestResult In group.Results
-		          Dim methodName As String = group.Name + "." + result.MethodInfo.Name
+		          Var methodName As String = group.Name + "." + result.MethodInfo.Name
 		          If rx.Search(methodName) IsA RegExMatch Then
 		            group.IncludeGroup = True
 		            
@@ -169,7 +180,7 @@ Protected Class TestController
 		    
 		    For Each pattern As String In excludePatterns
 		      rx.SearchPattern = pattern
-		      Dim hasDot As Boolean = PatternHasDot(pattern)
+		      Var hasDot As Boolean = PatternHasDot(pattern)
 		      
 		      //
 		      // See if this pattern matches any methods
@@ -183,7 +194,7 @@ Protected Class TestController
 		            Continue For result
 		          End If
 		          
-		          Dim methodName As String = group.Name + "." + result.MethodInfo.Name
+		          Var methodName As String = group.Name + "." + result.MethodInfo.Name
 		          If rx.Search(methodName) IsA RegExMatch Then
 		            result.IncludeMethod = False
 		          End If
@@ -201,7 +212,8 @@ Protected Class TestController
 
 	#tag Method, Flags = &h21
 		Private Sub Finish()
-		  EndTimer
+		  CalculateDuration
+		  
 		  Call RunTestCount // Updates all the counts
 		  RaiseEvent AllTestsFinished
 		End Sub
@@ -215,16 +227,13 @@ Protected Class TestController
 
 	#tag Method, Flags = &h21, CompatibilityFlags = (TargetConsole and (Target32Bit or Target64Bit)) or  (TargetWeb and (Target32Bit or Target64Bit)) or  (TargetDesktop and (Target32Bit or Target64Bit))
 		Private Function PatternHasDot(pattern As String) As Boolean
-		  Return pattern.Left(kHasDotComment.Len) = kHasDotComment
+		  Return pattern.Left(kHasDotComment.Length) = kHasDotComment
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub RaiseGroupFinished(group As TestGroup)
 		  RaiseEvent GroupFinished(group)
-		  If Not IsRunning Then
-		    Finish
-		  End If
 		  
 		End Sub
 	#tag EndMethod
@@ -237,23 +246,42 @@ Protected Class TestController
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
+		Private Sub ResetDuration()
+		  mStartMS = System.Microseconds
+		  mFinishMS = 0.0
+		  
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Attributes( Hidden )  Sub RunNextTest()
+		  If TestQueue.LastIndex = -1 Then
+		    Stop
+		  Else
+		    Var tg As TestGroup = TestQueue(0)
+		    TestQueue.RemoveAt(0)
+		    tg.Start
+		  End If
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
 		Private Sub RunTestGroups()
-		  StartTimer
-		  Dim excludeCount As Integer
+		  ResetDuration
+		  
 		  For Each tg As TestGroup In mTestGroups
-		    If Not tg.IncludeGroup Then
-		      excludeCount = excludeCount + 1
+		    If tg.IncludeGroup Then
+		      TestQueue.Add tg
+		      tg.ClearResults
 		    Else
-		      tg.Start
+		      tg.ClearResults(True)
 		    End If
 		  Next
 		  
-		  If excludeCount = (mTestGroups.Ubound + 1) Then
-		    //
-		    // All excluded or no tests
-		    //
-		    Finish
-		  End If
+		  RunNextTest
+		  
 		  
 		End Sub
 	#tag EndMethod
@@ -262,10 +290,10 @@ Protected Class TestController
 		Private Function SimplePatternToRegExPattern(pattern As String) As String
 		  Const kPlaceholder As String = &u01
 		  
-		  Dim hasDot As Boolean = pattern.InStr(".") <> 0
+		  Var hasDot As Boolean = pattern.IndexOf(".") <> -1
 		  
 		  pattern = pattern.ReplaceAll("*", kPlaceholder)
-		  pattern = "^\Q" + pattern.ReplaceAllB("\E", "\E\\E\Q") + "\E"
+		  pattern = "^\Q" + pattern.ReplaceAllBytes("\E", "\E\\E\Q") + "\E"
 		  pattern = pattern.ReplaceAll(kPlaceholder, "\E.*\Q")
 		  
 		  //
@@ -277,7 +305,7 @@ Protected Class TestController
 		  
 		  pattern = pattern + "$"
 		  
-		  return pattern
+		  Return pattern
 		End Function
 	#tag EndMethod
 
@@ -288,9 +316,15 @@ Protected Class TestController
 		End Sub
 	#tag EndMethod
 
-	#tag Method, Flags = &h21
-		Private Sub StartTimer()
-		  mTimer = Microseconds
+	#tag Method, Flags = &h0
+		Sub Stop()
+		  For Each tg As TestGroup In mTestGroups
+		    tg.Stop
+		  Next
+		  
+		  TestQueue.RemoveAll
+		  Finish
+		  
 		End Sub
 	#tag EndMethod
 
@@ -321,7 +355,7 @@ Protected Class TestController
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim totalCount As Integer
+			  Var totalCount As Integer
 			  
 			  For Each tg As TestGroup In mTestGroups
 			    If tg.IncludeGroup Then
@@ -338,7 +372,14 @@ Protected Class TestController
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return mDuration
+			  Var duration As Double
+			  If mFinishMS = 0.0 Then
+			    duration = System.Microseconds - mStartMS
+			  Else
+			    duration = mFinishMS - mStartMS
+			  End If
+			  
+			  Return duration / 1000000.0
 			End Get
 		#tag EndGetter
 		Duration As Double
@@ -356,7 +397,7 @@ Protected Class TestController
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return mTestGroups.Ubound + 1
+			  Return mTestGroups.LastIndex + 1
 			End Get
 		#tag EndGetter
 		GroupCount As Integer
@@ -379,11 +420,11 @@ Protected Class TestController
 	#tag EndComputedProperty
 
 	#tag Property, Flags = &h21
-		Private mDuration As Double
+		Private mFailedCount As Integer
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
-		Private mFailedCount As Integer
+		Private mFinishMS As Double
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
@@ -399,11 +440,11 @@ Protected Class TestController
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
-		Private mTestGroups() As TestGroup
+		Private mStartMS As Double
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
-		Private mTimer As Double
+		Private mTestGroups() As TestGroup
 	#tag EndProperty
 
 	#tag ComputedProperty, Flags = &h0
@@ -427,7 +468,7 @@ Protected Class TestController
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim cnt As Integer
+			  Var cnt As Integer
 			  
 			  For Each tg As TestGroup In mTestGroups
 			    If tg.IncludeGroup Then cnt = cnt + 1
@@ -447,7 +488,7 @@ Protected Class TestController
 			  mSkippedCount = 0
 			  mNotImplementedCount = 0
 			  
-			  Dim totalCount As Integer
+			  Var totalCount As Integer
 			  
 			  For Each tg As TestGroup In mTestGroups
 			    If tg.IncludeGroup Then
@@ -475,34 +516,50 @@ Protected Class TestController
 		SkippedCount As Integer
 	#tag EndComputedProperty
 
+	#tag Property, Flags = &h21
+		Private TestQueue() As TestGroup
+	#tag EndProperty
+
 
 	#tag Constant, Name = kHasDotComment, Type = String, Dynamic = False, Default = \"(\?#HasDot)", Scope = Private, CompatibilityFlags = (TargetConsole and (Target32Bit or Target64Bit)) or  (TargetWeb and (Target32Bit or Target64Bit)) or  (TargetDesktop and (Target32Bit or Target64Bit))
 	#tag EndConstant
 
-	#tag Constant, Name = XojoUnitVersion, Type = Text, Dynamic = False, Default = \"6.3", Scope = Public
+	#tag Constant, Name = XojoUnitVersion, Type = String, Dynamic = False, Default = \"6.7.1", Scope = Public
 	#tag EndConstant
 
 
 	#tag ViewBehavior
 		#tag ViewProperty
 			Name="AllTestCount"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Duration"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="Double"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="FailedCount"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="GroupCount"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Index"
@@ -510,11 +567,15 @@ Protected Class TestController
 			Group="ID"
 			InitialValue="-2147483648"
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="IsRunning"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="Boolean"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Left"
@@ -522,43 +583,63 @@ Protected Class TestController
 			Group="Position"
 			InitialValue="0"
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Name"
 			Visible=true
 			Group="ID"
+			InitialValue=""
 			Type="String"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="NotImplementedCount"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="PassedCount"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="RunGroupCount"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="RunTestCount"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="SkippedCount"
+			Visible=false
 			Group="Behavior"
+			InitialValue=""
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"
 			Visible=true
 			Group="ID"
+			InitialValue=""
 			Type="String"
+			EditorType=""
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Top"
@@ -566,6 +647,7 @@ Protected Class TestController
 			Group="Position"
 			InitialValue="0"
 			Type="Integer"
+			EditorType=""
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Class

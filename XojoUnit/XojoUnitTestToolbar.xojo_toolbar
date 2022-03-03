@@ -1,19 +1,39 @@
 #tag Toolbar
 Begin Toolbar XojoUnitTestToolbar
-	Begin ToolButton RunButton
+	Begin ToolbarButton RunButton
 		Caption = "Run Tests"
-		HelpTag = ""
-		Style = 0
+		Tooltip = ""
+		ButtonStyle = 0
 	End
-	Begin ToolButton ToolItem1
+	Begin ToolbarButton RunUntilFailButton
+		Caption = "Run Until Fail"
+		Tooltip = ""
+		ButtonStyle = 0
+	End
+	Begin ToolbarButton ToolItem3
 		Caption = "Untitled"
-		HelpTag = ""
-		Style = 5
+		Tooltip = ""
+		ButtonStyle = 5
 	End
-	Begin ToolButton ExportButton
+	Begin ToolbarButton StopButton
+		Caption = "Stop Tests"
+		Tooltip = ""
+		ButtonStyle = 0
+	End
+	Begin ToolbarButton ToolItem1
+		Caption = "Untitled"
+		Tooltip = ""
+		ButtonStyle = 5
+	End
+	Begin ToolbarButton ToolItem4
+		Caption = "Untitled"
+		Tooltip = ""
+		ButtonStyle = 5
+	End
+	Begin ToolbarButton ExportButton
 		Caption = "Export Results"
-		HelpTag = ""
-		Style = 0
+		Tooltip = ""
+		ButtonStyle = 0
 	End
 End
 #tag EndToolbar
